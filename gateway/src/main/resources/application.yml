@@ -1,0 +1,17 @@
+server:
+  port: 9000
+
+# config routing
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: service1
+        uri: http://localhost:9001
+        predicates:
+          - Path= /service1/**
+      - id: service3
+        uri: http://localhost:9003
+        predicates:
+          - Path= /service3/**
+
