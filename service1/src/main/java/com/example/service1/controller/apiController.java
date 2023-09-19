@@ -1,11 +1,15 @@
 package com.example.service1.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.service1.jwt.JwtTokenProvider;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
-@RequestMapping("/service1")
+//@RequestMapping("/service1")
+@Slf4j
 public class apiController {
 	@GetMapping("/api1")
 	public String api1() {
@@ -16,5 +20,34 @@ public class apiController {
 	public String api2() {
 		System.out.println("Service1 api2");
 		return "From Service1 /api2";
+	}
+
+
+	@Autowired
+	JwtTokenProvider jwtTokenProvider;
+
+	@PostMapping("/oauth/2.0/token")
+	public String login(@RequestBody Map<String,String> m) {
+
+		log.info("call token api");
+
+		// 사용자 인증 DB등..
+		String id = m.get("id");
+		String pw = m.get("pw");
+
+		String userId = "user";
+		String userPw = "1234";
+
+		// 정상 user인 경우
+		if (userId.equals(id) && userPw.equals(pw)) {
+			// jwt 발급
+			String jwt = jwtTokenProvider.createToken(m);
+			return jwt;
+
+		} else {
+			log.info("토큰 발급 실패");
+			return "token 발급 실패";
+		}
+
 	}
 }
