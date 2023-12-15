@@ -36,7 +36,7 @@ public class JwtTokenProvider {
         String clientId = info.get("client_id");
         String issuer = info.get("org_code");
         String ci = "test-ci-number";
-        String scope = "test-scope-val";
+        String scope = info.get("scope");
 
 
         // client secret은 어디에 넣는지 확인 필요

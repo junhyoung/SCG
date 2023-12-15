@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-//@RequestMapping("/service1")
+@RequestMapping("/service1")
 @Slf4j
 public class apiController {
 	@GetMapping("/api1")
@@ -26,7 +26,7 @@ public class apiController {
 	@Autowired
 	JwtTokenProvider jwtTokenProvider;
 
-	@PostMapping("/oauth/2.0/token")
+	@PostMapping("/token")
 	public String login(@RequestBody Map<String,String> m) {
 
 		log.info("call token api");

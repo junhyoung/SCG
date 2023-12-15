@@ -1,6 +1,9 @@
 server:
   port: 9000
 
+jwt:
+  secret: testscretkeytestscretkeytestscretkeytestscretkeytestscretkey
+
 # config routing
 spring:
   cloud:
@@ -14,4 +17,6 @@ spring:
         uri: http://localhost:9003
         predicates:
           - Path= /service3/**
+        filters:
+          - AuthorizationHeaderFilter # JWT 인증
 
