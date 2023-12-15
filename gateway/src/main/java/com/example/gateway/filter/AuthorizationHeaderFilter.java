@@ -50,7 +50,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
                 String scopes =  tokenInfo.get("scope").toString();
 
                 // 특정 조건을 만족하는지 확인 (예: "admin" 또는 "service3"인 경우)
-                if (scopes != null && (scopes.contains("admin") || scopes.contains("service3"))) {
+                if (scopes != null && (scopes.equals("admin") || scopes.equals("service3"))) {
                     // 요청에 인증 헤더 추가
                     addAuthorizationHeaders(exchange.getRequest(), tokenInfo);
 
