@@ -1,2 +1,13 @@
 server:
   port: 9003
+
+
+spring:
+  application:
+    name: svc3    # config 서버에서 해당 이름을 찾는다.
+  profiles:
+    active: dev   # config 서버에서 해당 profile 을 찾는다.
+  config:
+    import: optional:configserver:http://localhost:8888  # optional: 을 붙이게되면 컨피그서버와의 통신 실패 시 내부 yml 정보를 읽는다.
+
+

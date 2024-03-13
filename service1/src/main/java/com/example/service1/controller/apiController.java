@@ -1,5 +1,6 @@
 package com.example.service1.controller;
 
+import com.example.service1.config.Service1Config;
 import com.example.service1.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,24 @@ public class apiController {
 	public String api2() {
 		System.out.println("Service1 api2");
 		return "From Service1 /api2";
+	}
+
+	@GetMapping("/msg")
+	public String messge(@RequestHeader("first-request") String header) {
+		log.info(header);
+		return "From Service1 /msg";
+	}
+
+	@GetMapping("/check")
+	public String check() {
+		return "From Service1 /check";
+	}
+
+	@Autowired
+	Service1Config config;
+	@GetMapping("/configtest")
+	public String configTest() {
+		return config.getConfigTest();
 	}
 
 

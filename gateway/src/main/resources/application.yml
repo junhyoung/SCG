@@ -6,17 +6,43 @@ jwt:
 
 # config routing
 spring:
+  application:
+    name: apigateway
   cloud:
     gateway:
+      default-filters:
+        - name: GlobalFilter
+          args:
+            baseMessage: Spring Cloud Gateway Global Filter
+            preLogger: true
+            postLogger: true
       routes:
       - id: service1
         uri: http://localhost:9001
         predicates:
           - Path= /service1/**
+        filters:
+#          - AddRequestHeader=first-request, first-request-header2
+#          - AddResponseHeader=first-response, first-response-header2
+          - name: CustomFilter
+          - name: LoggingFilter
+            args:
+              baseMessage: hello
+              preLogger: true
+              postLogger: true
       - id: service3
         uri: http://localhost:9003
         predicates:
           - Path= /service3/**
         filters:
+#          - AddRequestHeader=second-request, second-request-header2
+#          - AddResponseHeader=second-response, second-response-header2
           - AuthorizationHeaderFilter # JWT 인증
+
+
+token:
+  expiration_time: 86400000 # 24시간
+  secret: user_token
+
+
 
