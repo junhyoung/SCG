@@ -14,5 +14,6 @@ import org.springframework.stereotype.Service;
 public class Service1Config {
 
     private String configTest;
+    private String commonTest;
 
 }

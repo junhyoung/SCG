@@ -41,6 +41,11 @@ public class apiController {
 		return config.getConfigTest();
 	}
 
+	@GetMapping("/commontest")
+	public String commonTest() {
+		return config.getCommonTest();
+	}
+
 
 	@Autowired
 	JwtTokenProvider jwtTokenProvider;
