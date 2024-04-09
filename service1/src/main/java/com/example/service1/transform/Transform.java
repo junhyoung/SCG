@@ -32,7 +32,7 @@ public class Transform {
 
     }
 
-    public static String traverseItfInfo(Object currentObj, ItfInfo currentItfInfo, StringBuilder resultBuilder) throws JsonProcessingException {
+    public String traverseItfInfo(Object currentObj, ItfInfo currentItfInfo, StringBuilder resultBuilder) throws JsonProcessingException {
         // currentObj가 Map인 경우
         if (currentObj instanceof Map<?, ?>) {
             Map<String, Object> currentMap = (Map<String, Object>) currentObj;
@@ -64,7 +64,7 @@ public class Transform {
     }
 
     // UTF-8 바이트 길이에 따라 문자열을 처리하는 메서드
-    private static String handleFieldLength(String str, int maxLengthInBytes) {
+    private String handleFieldLength(String str, int maxLengthInBytes) {
         byte[] strBytes = str.getBytes(StandardCharsets.UTF_8);
         if (strBytes.length > maxLengthInBytes) {
             // 바이트 길이에 맞게 문자열을 잘라냄
@@ -76,7 +76,7 @@ public class Transform {
     }
 
     // UTF-8 바이트 길이에 맞게 문자열을 잘라내는 메서드
-    private static String cutStringToByteLength(String str, int maxLengthInBytes) {
+    private String cutStringToByteLength(String str, int maxLengthInBytes) {
         byte[] strBytes = str.getBytes(StandardCharsets.UTF_8);
         if (strBytes.length <= maxLengthInBytes) {
             return str;
@@ -88,7 +88,7 @@ public class Transform {
     }
 
     // 바이트 길이에 맞게 문자열에 '-'를 추가하여 패딩하는 메서드
-    private static String padWithCharacter(String str, int maxLengthInBytes, char c) {
+    private String padWithCharacter(String str, int maxLengthInBytes, char c) {
         StringBuilder stringBuilder = new StringBuilder(str);
         byte[] strBytes = stringBuilder.toString().getBytes(StandardCharsets.UTF_8);
         while (strBytes.length < maxLengthInBytes) {
