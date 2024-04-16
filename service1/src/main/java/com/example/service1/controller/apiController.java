@@ -59,15 +59,15 @@ public class apiController {
 		ItfInfo test = new ItfInfo(
 				"test",
 				'G',
-				new ItfInfo.NodeValue(0, 2, "Object", "personalInfo", "Personal Information Group", true, false),
+				new ItfInfo.NodeValue(0, 2, "object", "personalInfo", "Personal Information Group", true, false),
 				Arrays.asList(
-						new ItfInfo("name", 'F', new ItfInfo.NodeValue(1, 30, "String", "name", "Email of the person", true, false), null),
+						new ItfInfo("name", 'F', new ItfInfo.NodeValue(1, 30, "string", "name", "Email of the person", true, false), null),
 						new ItfInfo("age", 'F', new ItfInfo.NodeValue(0, 10, "int", "age", "Name of the person", true, false), null),
-						new ItfInfo("birth", 'F', new ItfInfo.NodeValue(2, 10, "String", "birth", "Name of the person", true, false), null),
-						new ItfInfo("contact", 'G', new ItfInfo.NodeValue(3, 2, "Object", "contact", "Institution Information", true, false),
+						new ItfInfo("birth", 'F', new ItfInfo.NodeValue(2, 10, "string", "birth", "Name of the person", true, false), null),
+						new ItfInfo("contact", 'G', new ItfInfo.NodeValue(3, 2, "object", "contact", "Institution Information", true, false),
 								Arrays.asList(
-										new ItfInfo("phone", 'F', new ItfInfo.NodeValue(1, 20, "String", "name", "name Test Field", true, false), null),
-										new ItfInfo("email", 'F', new ItfInfo.NodeValue(0, 20, "String", "test2", "Second Test Field", true, false), null)
+										new ItfInfo("phone", 'F', new ItfInfo.NodeValue(1, 20, "string", "name", "name Test Field", true, false), null),
+										new ItfInfo("email", 'F', new ItfInfo.NodeValue(0, 20, "string", "test2", "Second Test Field", true, false), null)
 				))
 				)
 		);
@@ -75,11 +75,15 @@ public class apiController {
 		ItfInfo root = new ItfInfo(
 				"Root",
 				'G',
-				new ItfInfo.NodeValue(0, 3, "Object", "root", "Root Node", true, false),
+				new ItfInfo.NodeValue(0, 3, "object", "root", "Root Node", true, false),
 				Arrays.asList(test)
 		);
 
-		return transform.transformJsonToFixedLength(req,root);
+		String fixedLength = transform.transformJsonToFixedLength(req,root);
+		log.info("전문 > {}", fixedLength);
+		Map<String, Object> resMap = transform.transformFixedLengthToMap(fixedLength,root);
+
+		return transform.mapToJson(resMap);
 	}
 
 
