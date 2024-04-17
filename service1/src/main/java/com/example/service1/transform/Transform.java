@@ -216,7 +216,7 @@ public class Transform {
 
             // 지정된 횟수만큼 노드 처리 반복
             for (int i = 0; i < count; i++) {
-                // 노드가 가시적이지 않은 경우 데이터 파싱만 수행하고 저장은 생략
+                // 노드가 visible 아닌 경우 데이터 파싱만 수행하고 저장은 생략
                 if (!child.getNodeValue().isVisible()) {
                     // FIELD 타입은 길이만큼 증가, GROUP 타입은 재귀 호출
                     localStart += (child.getItfType() == ItfType.FIELD.getType()) ? fieldLength : parseFixedLengthString(dataBytes, localStart, child, new HashMap<>());
