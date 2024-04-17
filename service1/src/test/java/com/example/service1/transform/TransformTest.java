@@ -23,105 +23,105 @@ class TransformTest {
     @Test
     void transformTest() {
 
-        ItfInfo title = ItfInfo.builder()
+        NodeInfo title = NodeInfo.builder()
                 .fieldName("title")
                 .itfType('F')
-                .nodeValue(ItfInfo.NodeValue.builder()
+                .nodeValue(NodeInfo.NodeValue.builder()
                         .index(1)
                         .size(7)
                         .type(StringUtils.TYPE_STRING)
                         .visible(true)
                         .build())
                 .build();
-        ItfInfo personalInfo = ItfInfo.builder()
+        NodeInfo personalInfo = NodeInfo.builder()
                 .fieldName("personalInfo")
                 .itfType('G')
-                .nodeValue(ItfInfo.NodeValue.builder()
+                .nodeValue(NodeInfo.NodeValue.builder()
                         .index(0)
                         .size(2)
                         .type(StringUtils.TYPE_OBJECT)
                         .visible(true)
                         .build())
                 .nodes(Arrays.asList(
-                        ItfInfo.builder().fieldName("name").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(0).size(10).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-                        ItfInfo.builder().fieldName("email").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(1).size(30).type(StringUtils.TYPE_STRING).visible(true).build()).build()
+                        NodeInfo.builder().fieldName("name").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(10).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
+                        NodeInfo.builder().fieldName("email").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(30).type(StringUtils.TYPE_STRING).visible(true).build()).build()
                 ))
                 .build();
-        ItfInfo education_cnt = ItfInfo.builder()
+        NodeInfo education_cnt = NodeInfo.builder()
                 .fieldName("education_cnt")
                 .itfType('F')
-                .nodeValue(ItfInfo.NodeValue.builder()
+                .nodeValue(NodeInfo.NodeValue.builder()
                         .index(2)
                         .size(5)
                         .type(StringUtils.TYPE_INT)
                         .visible(true)
                         .build())
                 .build();
-        ItfInfo projects_cnt = ItfInfo.builder()
+        NodeInfo projects_cnt = NodeInfo.builder()
                 .fieldName("projects_cnt")
                 .itfType('F')
-                .nodeValue(ItfInfo.NodeValue.builder()
+                .nodeValue(NodeInfo.NodeValue.builder()
                         .index(4)
                         .size(5)
                         .type(StringUtils.TYPE_INT)
                         .visible(true)
                         .build())
                 .build();
-        ItfInfo education = ItfInfo.builder()
+        NodeInfo education = NodeInfo.builder()
                 .fieldName("education")
                 .itfType('G')
-                .nodeValue(ItfInfo.NodeValue.builder()
+                .nodeValue(NodeInfo.NodeValue.builder()
                         .index(3)
                         .size(3)
                         .type(StringUtils.TYPE_LIST)
                         .visible(true)
                         .build())
                 .nodes(Arrays.asList(
-                        ItfInfo.builder().fieldName("degree").itfType('F').nodeValue(ItfInfo.NodeValue.builder()
+                        NodeInfo.builder().fieldName("degree").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
                                                                                 .index(0)
                                                                                 .size(50)
                                                                                 .type(StringUtils.TYPE_STRING)
                                                                                 .visible(true)
                                                                                 .build()).build(),
-                        ItfInfo.builder().fieldName("year").itfType('F').nodeValue(ItfInfo.NodeValue.builder()
+                        NodeInfo.builder().fieldName("year").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
                                                                                 .index(1)
                                                                                 .size(10)
                                                                                 .type(StringUtils.TYPE_INT)
                                                                                 .visible(true)
                                                                                 .build()).build(),
-                        ItfInfo.builder().fieldName("institution").itfType('G').nodeValue(ItfInfo.NodeValue.builder()
+                        NodeInfo.builder().fieldName("institution").itfType('G').nodeValue(NodeInfo.NodeValue.builder()
                                                                                 .index(2)
                                                                                 .size(2)
                                                                                 .type(StringUtils.TYPE_STRING)
                                                                                 .visible(true).build())
                                                                 .nodes( Arrays.asList(
-                                                                        ItfInfo.builder().fieldName("name").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(0).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-                                                                        ItfInfo.builder().fieldName("test").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(1).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-                                                                        ItfInfo.builder().fieldName("test2").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(2).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build()
+                                                                        NodeInfo.builder().fieldName("name").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
+                                                                        NodeInfo.builder().fieldName("test").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
+                                                                        NodeInfo.builder().fieldName("test2").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(2).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build()
                                                                         )
                                                                 ).build())
                 ).build();
 
-        ItfInfo project = ItfInfo.builder()
+        NodeInfo project = NodeInfo.builder()
                 .fieldName("projects")
                 .itfType('G')
-                .nodeValue(ItfInfo.NodeValue.builder()
+                .nodeValue(NodeInfo.NodeValue.builder()
                         .index(5)
                         .size(4)
                         .type(StringUtils.TYPE_LIST)
                         .visible(true)
                         .build())
                 .nodes(Arrays.asList(
-                        ItfInfo.builder().fieldName("title").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(0).size(30).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-                        ItfInfo.builder().fieldName("description").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(1).size(100).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-                        ItfInfo.builder().fieldName("technologies").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(2).size(100).type(StringUtils.TYPE_ARRAY).visible(true).build()).build()
+                        NodeInfo.builder().fieldName("title").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(30).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
+                        NodeInfo.builder().fieldName("description").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(100).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
+                        NodeInfo.builder().fieldName("technologies").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(2).size(100).type(StringUtils.TYPE_ARRAY).visible(true).build()).build()
                 ))
                 .build();
 
-        ItfInfo root = ItfInfo.builder()
+        NodeInfo root = NodeInfo.builder()
                 .fieldName("Root")
                 .itfType('G')
-                .nodeValue(ItfInfo.NodeValue.builder()
+                .nodeValue(NodeInfo.NodeValue.builder()
                         .index(0)
                         .size(1)
                         .type(StringUtils.TYPE_OBJECT)

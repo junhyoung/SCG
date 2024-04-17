@@ -6,13 +6,13 @@ import java.util.List;
 
 @Data
 @Builder
-public class ItfInfo {
+public class NodeInfo {
 
     private String fieldName;
     // 현재 노드가 그룹인지 필드인지 구분. (예를들면 G, F)
     private char itfType;
     private NodeValue nodeValue;
-    private List<ItfInfo> nodes;
+    private List<NodeInfo> nodes;
 
     @Data
     @Builder
@@ -46,7 +46,7 @@ public class ItfInfo {
     }
 
     @Builder
-    public ItfInfo(String fieldName, char itfType, NodeValue nodeValue, List<ItfInfo> nodes) {
+    public NodeInfo(String fieldName, char itfType, NodeValue nodeValue, List<NodeInfo> nodes) {
         this.fieldName = fieldName;
         this.itfType = itfType;
         this.nodeValue = nodeValue;

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ItfType {
+public enum NodeType {
     GROUP ('G'),
     FIELD ('F');
 

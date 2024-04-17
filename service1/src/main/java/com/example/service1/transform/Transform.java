@@ -19,7 +19,7 @@ public class Transform {
      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*        JSON > 전문         *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
      */
-    public String transformJsonToFixedLength(String json, ItfInfo rootItfInfo) throws JsonProcessingException {
+    public String transformJsonToFixedLength(String json, NodeInfo rootNodeInfo) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(json);
 
@@ -29,37 +29,37 @@ public class Transform {
         // json to Map
         Map<?, ?> resultMap = objectMapper.convertValue(rootNode, Map.class);
 
-        String result = traverseItfInfo(resultMap, rootItfInfo, resultBuilder);
+        String result = traverseNodeInfo(resultMap, rootNodeInfo, resultBuilder);
         log.info("result > {}" , result);
         return result;
 
     }
 
-    public String traverseItfInfo(Object currentObj, ItfInfo currentItfInfo, StringBuilder resultBuilder) throws JsonProcessingException {
+    public String traverseNodeInfo(Object currentObj, NodeInfo currentNodeInfo, StringBuilder resultBuilder) throws JsonProcessingException {
         // currentObj가 Map인 경우
         if (currentObj instanceof Map<?, ?>) {
             Map<String, Object> currentMap = (Map<String, Object>) currentObj;
 
             // NodeValue의 인덱스에 따라 nodes 리스트를 정렬
-            List<ItfInfo> sortedNodes = new ArrayList<>(currentItfInfo.getNodes());
+            List<NodeInfo> sortedNodes = new ArrayList<>(currentNodeInfo.getNodes());
             sortedNodes.sort(Comparator.comparingInt(a -> a.getNodeValue().getIndex()));
 
-            for (ItfInfo childItfInfo : sortedNodes) {
-                Object childObj = currentMap.get(childItfInfo.getFieldName());
+            for (NodeInfo childNodeInfo : sortedNodes) {
+                Object childObj = currentMap.get(childNodeInfo.getFieldName());
 
                 // 필드 타입이 'F'인 경우 값을 직접 추출
-                if (childItfInfo.getItfType() == ItfType.FIELD.getType() && childObj != null) {
-                    String paddStr = handleFieldLength(childObj.toString(), childItfInfo);
+                if (childNodeInfo.getItfType() == NodeType.FIELD.getType() && childObj != null) {
+                    String paddStr = handleFieldLength(childObj.toString(), childNodeInfo);
                     resultBuilder.append(paddStr);
-                } else if (childItfInfo.getItfType() == ItfType.GROUP.getType() && childObj != null) {
+                } else if (childNodeInfo.getItfType() == NodeType.GROUP.getType() && childObj != null) {
                     // 필드 타입이 'G'인 경우 재귀적으로 처리
-                    traverseItfInfo(childObj, childItfInfo, resultBuilder);
+                    traverseNodeInfo(childObj, childNodeInfo, resultBuilder);
                 }
             }
         } else if (currentObj instanceof List<?> currentList) {
             // currentObj가 List인 경우
             for (Object item : currentList) {
-                traverseItfInfo(item, currentItfInfo, resultBuilder);
+                traverseNodeInfo(item, currentNodeInfo, resultBuilder);
             }
         }
         return resultBuilder.toString();
@@ -104,10 +104,10 @@ public class Transform {
 
 
     // UTF-8 바이트 길이에 따라 문자열을 처리하는 메서드
-    private String handleFieldLength(String str, ItfInfo itfInfo) {
+    private String handleFieldLength(String str, NodeInfo nodeInfo) {
         byte[] strBytes = str.getBytes(StandardCharsets.UTF_8);
-        int size = itfInfo.getNodeValue().getSize();
-        String type = itfInfo.getNodeValue().getType();
+        int size = nodeInfo.getNodeValue().getSize();
+        String type = nodeInfo.getNodeValue().getType();
 
         if (strBytes.length > size) {
             // 바이트 길이에 맞게 문자열을 잘라냄
@@ -116,7 +116,7 @@ public class Transform {
             // 바이트 길이에 맞게 문자를 추가하여 패딩
             return switch (type) {
                 case StringUtils.TYPE_INT -> paddingInt(str, size);
-                case StringUtils.TYPE_FLOAT -> paddingFloat(str, size, itfInfo.getNodeValue().getFsize());
+                case StringUtils.TYPE_FLOAT -> paddingFloat(str, size, nodeInfo.getNodeValue().getFsize());
                 default -> paddingStr(str, size, StringUtils.BYTE_SPACE, StringUtils.CHARSET_UTF8);
             };
         }
@@ -186,24 +186,24 @@ public class Transform {
      */
 
 
-    public Map<String, Object> transformFixedLengthToMap(String fixedLengthStr, ItfInfo rootItfInfo) {
+    public Map<String, Object> transformFixedLengthToMap(String fixedLengthStr, NodeInfo rootNodeInfo) {
         Map<String, Object> resultMap = new HashMap<>();
         byte[] dataBytes = fixedLengthStr.getBytes(StandardCharsets.UTF_8);
-        parseFixedLengthString(dataBytes, 0, rootItfInfo, resultMap);
+        parseFixedLengthString(dataBytes, 0, rootNodeInfo, resultMap);
         return resultMap;
     }
 
     // 메서드 설명: 바이트 배열에서 시작 위치를 기준으로 데이터를 파싱하고 맵에 저장
-    private int parseFixedLengthString(byte[] dataBytes, int start, ItfInfo info, Map<String, Object> map) {
+    private int parseFixedLengthString(byte[] dataBytes, int start, NodeInfo info, Map<String, Object> map) {
         // 시작 인덱스 초기화
         int localStart = start;
 
         // info에서 제공하는 노드 정보를 기반으로 노드들을 정렬
-        List<ItfInfo> sortedNodes = new ArrayList<>(info.getNodes());
+        List<NodeInfo> sortedNodes = new ArrayList<>(info.getNodes());
         sortedNodes.sort(Comparator.comparingInt(a -> a.getNodeValue().getIndex())); // 노드를 인덱스 순으로 정렬
 
         // 정렬된 노드 리스트를 반복 처리
-        for (ItfInfo child : sortedNodes) {
+        for (NodeInfo child : sortedNodes) {
             String key = child.getFieldName();               // 현재 노드의 필드명
             int fieldLength = child.getNodeValue().getSize(); // 현재 노드의 데이터 크기
             int count = 1;                                   // 기본적으로 한 번만 처리
@@ -219,12 +219,12 @@ public class Transform {
                 // 노드가 visible 아닌 경우 데이터 파싱만 수행하고 저장은 생략
                 if (!child.getNodeValue().isVisible()) {
                     // FIELD 타입은 길이만큼 증가, GROUP 타입은 재귀 호출
-                    localStart += (child.getItfType() == ItfType.FIELD.getType()) ? fieldLength : parseFixedLengthString(dataBytes, localStart, child, new HashMap<>());
+                    localStart += (child.getItfType() == NodeType.FIELD.getType()) ? fieldLength : parseFixedLengthString(dataBytes, localStart, child, new HashMap<>());
                     continue; // 맵에 추가하지 않고 다음 반복으로 넘어감
                 }
 
                 // FIELD 타입의 데이터 처리
-                if (child.getItfType() == ItfType.FIELD.getType()) {
+                if (child.getItfType() == NodeType.FIELD.getType()) {
                     // 데이터를 문자열로 변환 및 앞뒤 공백 제거
                     String fieldValue = new String(dataBytes, localStart, fieldLength, StandardCharsets.UTF_8).trim();
                     localStart += fieldLength; // 처리 위치 업데이트
@@ -237,7 +237,7 @@ public class Transform {
                     } else {
                         map.put(key, fieldValue); // 단일 객체 처리
                     }
-                } else if (child.getItfType() == ItfType.GROUP.getType()) {
+                } else if (child.getItfType() == NodeType.GROUP.getType()) {
                     // GROUP 타입의 데이터 처리 (하위 맵 객체 생성 및 재귀 호출로 파싱)
                     Map<String, Object> childMap = new HashMap<>();
                     int parsedLength = parseFixedLengthString(dataBytes, localStart, child, childMap);

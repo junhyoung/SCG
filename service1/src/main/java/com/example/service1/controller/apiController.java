@@ -2,7 +2,7 @@ package com.example.service1.controller;
 
 import com.example.service1.config.Service1Config;
 import com.example.service1.jwt.JwtTokenProvider;
-import com.example.service1.transform.ItfInfo;
+import com.example.service1.transform.NodeInfo;
 import com.example.service1.transform.Transform;
 import com.example.service1.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,52 +57,52 @@ public class apiController {
 	public String transform(@RequestBody String req) throws JsonProcessingException {
 		log.info("TRANSFORM!!");
 
-		ItfInfo test = ItfInfo.builder()
+		NodeInfo test = NodeInfo.builder()
 				.fieldName("test")
 				.itfType('G')
-				.nodeValue(ItfInfo.NodeValue.builder()
+				.nodeValue(NodeInfo.NodeValue.builder()
 						.index(0)
 						.size(2)
 						.type(StringUtils.TYPE_OBJECT)
 						.visible(true)
 						.build())
 				.nodes(Arrays.asList(
-						ItfInfo.builder().fieldName("name").itfType('F').nodeValue(ItfInfo.NodeValue.builder()
+						NodeInfo.builder().fieldName("name").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
 								.index(0)
 								.size(10)
 								.type(StringUtils.TYPE_STRING)
 								.visible(true)
 								.build()).build(),
-						ItfInfo.builder().fieldName("age").itfType('F').nodeValue(ItfInfo.NodeValue.builder()
+						NodeInfo.builder().fieldName("age").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
 								.index(10)
 								.size(10)
 								.type(StringUtils.TYPE_INT)
 								.visible(false)
 								.build()).build(),
-						ItfInfo.builder().fieldName("birth").itfType('F').nodeValue(ItfInfo.NodeValue.builder()
+						NodeInfo.builder().fieldName("birth").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
 								.index(2)
 								.size(10)
 								.type(StringUtils.TYPE_INT)
 								.visible(true)
 								.build()).build(),
-						ItfInfo.builder().fieldName("contact").itfType('G').nodeValue(ItfInfo.NodeValue.builder()
+						NodeInfo.builder().fieldName("contact").itfType('G').nodeValue(NodeInfo.NodeValue.builder()
 										.index(3)
 										.size(2)
 										.type(StringUtils.TYPE_OBJECT)
 										.visible(true).build())
 								.nodes( Arrays.asList(
-												ItfInfo.builder().fieldName("phone").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(0).size(20).type(StringUtils.TYPE_STRING).visible(false).build()).build(),
-												ItfInfo.builder().fieldName("email").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(1).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-												ItfInfo.builder().fieldName("varInt").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(2).size(20).type(StringUtils.TYPE_INT).visible(true).build()).build(),
-												ItfInfo.builder().fieldName("varFloat").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(3).size(20).fsize(4).type(StringUtils.TYPE_FLOAT).visible(true).build()).build()
+												NodeInfo.builder().fieldName("phone").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(20).type(StringUtils.TYPE_STRING).visible(false).build()).build(),
+												NodeInfo.builder().fieldName("email").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
+												NodeInfo.builder().fieldName("varInt").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(2).size(20).type(StringUtils.TYPE_INT).visible(true).build()).build(),
+												NodeInfo.builder().fieldName("varFloat").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(3).size(20).fsize(4).type(StringUtils.TYPE_FLOAT).visible(true).build()).build()
 										)
 								).build())
 				).build();
 
-		ItfInfo root = ItfInfo.builder()
+		NodeInfo root = NodeInfo.builder()
 				.fieldName("Root")
 				.itfType('G')
-				.nodeValue(ItfInfo.NodeValue.builder()
+				.nodeValue(NodeInfo.NodeValue.builder()
 						.index(0)
 						.size(1)
 						.type(StringUtils.TYPE_OBJECT)
