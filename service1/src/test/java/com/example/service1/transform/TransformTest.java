@@ -147,7 +147,7 @@ class TransformTest {
                 "        \"test\": \"Example Value 1\",\n" +
                 "        \"test2\": \"Example Value 2\"\n" +
                 "      },\n" +
-                "      \"year\": 2020.122\n" +
+                "      \"year\": 2020\n" +
                 "    },\n" +
                 "    {\n" +
                 "      \"degree\": \"Master of Science in Artificial Intelligence\",\n" +
@@ -166,12 +166,17 @@ class TransformTest {
                 "      \"technologies\": [\"IoT\", \"Artificial Intelligence\", \"Cloud Computing\"]\n" +
                 "    },\n" +
                 "    {\n" +
+                "      \"title\": \"테스트용 제목\",\n" +
+                "      \"description\": \"테스틑용 설명\",\n" +
+                "      \"technologies\": [\"IoT\", \"Artificial Intelligence\", \"Cloud Computing\"]\n" +
+                "    },\n" +
+                "    {\n" +
                 "      \"title\": \"E-Health Record Management System\",\n" +
                 "      \"description\": \"Designed and implemented a secure and scalable web application for managing patient records.\",\n" +
                 "      \"technologies\": [\"Web Development\", \"Database Management\", \"Cybersecurity\"]\n" +
                 "    }\n" +
                 "  ],\n" +
-                "  \"projects_cnt\": 2\n" +
+                "  \"projects_cnt\": 3\n" +
                 "}\n";
 
         try {

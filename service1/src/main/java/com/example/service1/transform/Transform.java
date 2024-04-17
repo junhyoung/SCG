@@ -153,17 +153,6 @@ public class Transform {
 
     }
 
-    // 바이트 길이에 맞게 문자열에 '-'를 추가하여 패딩하는 메서드
-    private String padWithCharacter(String str, int maxLengthInBytes, char c) {
-        StringBuilder stringBuilder = new StringBuilder(str);
-        byte[] strBytes = stringBuilder.toString().getBytes(StandardCharsets.UTF_8);
-        while (strBytes.length < maxLengthInBytes) {
-            stringBuilder.append(c);
-            strBytes = stringBuilder.toString().getBytes(StandardCharsets.UTF_8);
-        }
-        return stringBuilder.toString();
-    }
-
     public String paddingStr(String str, int size, byte FILTER, String charset) {
         try {
             byte[] buff = null;
@@ -204,46 +193,56 @@ public class Transform {
         return resultMap;
     }
 
-    // 메소드 정의: 고정 길이의 바이트 배열을 파싱하여 Map 객체로 변환
+    // 메서드 설명: 바이트 배열에서 시작 위치를 기준으로 데이터를 파싱하고 맵에 저장
     private int parseFixedLengthString(byte[] dataBytes, int start, ItfInfo info, Map<String, Object> map) {
-        // 현재 처리 위치 초기화
+        // 시작 인덱스 초기화
         int localStart = start;
 
+        // info에서 제공하는 노드 정보를 기반으로 노드들을 정렬
         List<ItfInfo> sortedNodes = new ArrayList<>(info.getNodes());
-        sortedNodes.sort(Comparator.comparingInt(a -> a.getNodeValue().getIndex()));
+        sortedNodes.sort(Comparator.comparingInt(a -> a.getNodeValue().getIndex())); // 노드를 인덱스 순으로 정렬
 
+        // 정렬된 노드 리스트를 반복 처리
         for (ItfInfo child : sortedNodes) {
-            String key = child.getFieldName();
-            int fieldLength = child.getNodeValue().getSize();
-            int count = 1;
+            String key = child.getFieldName();               // 현재 노드의 필드명
+            int fieldLength = child.getNodeValue().getSize(); // 현재 노드의 데이터 크기
+            int count = 1;                                   // 기본적으로 한 번만 처리
 
+            // 반복 횟수 지정 (_cnt 접미사 확인)
             String countKey = key + StringUtils.CNT_SUFFIX;
             if (map.containsKey(countKey)) {
-                count = Integer.parseInt((String) map.get(countKey));
+                count = Integer.parseInt((String) map.get(countKey)); // 맵에서 반복 횟수 가져오기
             }
 
+            // 지정된 횟수만큼 노드 처리 반복
             for (int i = 0; i < count; i++) {
-                // Parse data but do not add to map if not visible
+                // 노드가 가시적이지 않은 경우 데이터 파싱만 수행하고 저장은 생략
                 if (!child.getNodeValue().isVisible()) {
+                    // FIELD 타입은 길이만큼 증가, GROUP 타입은 재귀 호출
                     localStart += (child.getItfType() == ItfType.FIELD.getType()) ? fieldLength : parseFixedLengthString(dataBytes, localStart, child, new HashMap<>());
-                    continue; // Skip adding to map
+                    continue; // 맵에 추가하지 않고 다음 반복으로 넘어감
                 }
 
+                // FIELD 타입의 데이터 처리
                 if (child.getItfType() == ItfType.FIELD.getType()) {
+                    // 데이터를 문자열로 변환 및 앞뒤 공백 제거
                     String fieldValue = new String(dataBytes, localStart, fieldLength, StandardCharsets.UTF_8).trim();
-                    localStart += fieldLength;
+                    localStart += fieldLength; // 처리 위치 업데이트
 
+                    // 리스트 타입 또는 반복 횟수가 1보다 많은 경우 리스트 처리
                     if (StringUtils.TYPE_LIST.equals(child.getNodeValue().getType()) || count > 1) {
                         List<Object> list = (List<Object>) map.getOrDefault(key, new ArrayList<>());
                         list.add(fieldValue);
                         map.put(key, list);
                     } else {
-                        map.put(key, fieldValue);
+                        map.put(key, fieldValue); // 단일 객체 처리
                     }
                 } else if (child.getItfType() == ItfType.GROUP.getType()) {
+                    // GROUP 타입의 데이터 처리 (하위 맵 객체 생성 및 재귀 호출로 파싱)
                     Map<String, Object> childMap = new HashMap<>();
                     int parsedLength = parseFixedLengthString(dataBytes, localStart, child, childMap);
 
+                    // 리스트 처리 또는 단일 객체 처리
                     if (StringUtils.TYPE_LIST.equals(child.getNodeValue().getType()) || count > 1) {
                         List<Map<String, Object>> childList = (List<Map<String, Object>>) map.getOrDefault(key, new ArrayList<>());
                         childList.add(childMap);
@@ -251,15 +250,15 @@ public class Transform {
                     } else {
                         map.put(key, childMap);
                     }
-                    localStart += parsedLength;
+                    localStart += parsedLength; // 처리 위치 업데이트
                 }
             }
         }
 
-        return localStart - start;
+        return localStart - start; // 처리한 전체 길이 반환
     }
 
-    // JSON 테스트 출력용
+        // JSON 테스트 출력용
     public String mapToJson(Map<String, Object> map) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
