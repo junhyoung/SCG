@@ -4,6 +4,7 @@ import com.example.service1.config.Service1Config;
 import com.example.service1.jwt.JwtTokenProvider;
 import com.example.service1.transform.ItfInfo;
 import com.example.service1.transform.Transform;
+import com.example.service1.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,28 +57,59 @@ public class apiController {
 	public String transform(@RequestBody String req) throws JsonProcessingException {
 		log.info("TRANSFORM!!");
 
-		ItfInfo test = new ItfInfo(
-				"test",
-				'G',
-				new ItfInfo.NodeValue(0, 2, "object", "personalInfo", "Personal Information Group", true, false),
-				Arrays.asList(
-						new ItfInfo("name", 'F', new ItfInfo.NodeValue(1, 30, "string", "name", "Email of the person", true, false), null),
-						new ItfInfo("age", 'F', new ItfInfo.NodeValue(0, 10, "int", "age", "Name of the person", true, false), null),
-						new ItfInfo("birth", 'F', new ItfInfo.NodeValue(2, 10, "string", "birth", "Name of the person", true, false), null),
-						new ItfInfo("contact", 'G', new ItfInfo.NodeValue(3, 2, "object", "contact", "Institution Information", true, false),
-								Arrays.asList(
-										new ItfInfo("phone", 'F', new ItfInfo.NodeValue(1, 20, "string", "name", "name Test Field", true, false), null),
-										new ItfInfo("email", 'F', new ItfInfo.NodeValue(0, 20, "string", "test2", "Second Test Field", true, false), null)
-				))
-				)
-		);
+		ItfInfo test = ItfInfo.builder()
+				.fieldName("test")
+				.itfType('G')
+				.nodeValue(ItfInfo.NodeValue.builder()
+						.index(0)
+						.size(2)
+						.type(StringUtils.TYPE_OBJECT)
+						.visible(true)
+						.build())
+				.nodes(Arrays.asList(
+						ItfInfo.builder().fieldName("name").itfType('F').nodeValue(ItfInfo.NodeValue.builder()
+								.index(0)
+								.size(10)
+								.type(StringUtils.TYPE_STRING)
+								.visible(true)
+								.build()).build(),
+						ItfInfo.builder().fieldName("age").itfType('F').nodeValue(ItfInfo.NodeValue.builder()
+								.index(10)
+								.size(10)
+								.type(StringUtils.TYPE_INT)
+								.visible(false)
+								.build()).build(),
+						ItfInfo.builder().fieldName("birth").itfType('F').nodeValue(ItfInfo.NodeValue.builder()
+								.index(2)
+								.size(10)
+								.type(StringUtils.TYPE_INT)
+								.visible(true)
+								.build()).build(),
+						ItfInfo.builder().fieldName("contact").itfType('G').nodeValue(ItfInfo.NodeValue.builder()
+										.index(3)
+										.size(2)
+										.type(StringUtils.TYPE_OBJECT)
+										.visible(true).build())
+								.nodes( Arrays.asList(
+												ItfInfo.builder().fieldName("phone").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(0).size(20).type(StringUtils.TYPE_STRING).visible(false).build()).build(),
+												ItfInfo.builder().fieldName("email").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(1).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
+												ItfInfo.builder().fieldName("varInt").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(2).size(20).type(StringUtils.TYPE_INT).visible(true).build()).build(),
+												ItfInfo.builder().fieldName("varFloat").itfType('F').nodeValue(ItfInfo.NodeValue.builder().index(3).size(20).fsize(4).type(StringUtils.TYPE_FLOAT).visible(true).build()).build()
+										)
+								).build())
+				).build();
 
-		ItfInfo root = new ItfInfo(
-				"Root",
-				'G',
-				new ItfInfo.NodeValue(0, 3, "object", "root", "Root Node", true, false),
-				Arrays.asList(test)
-		);
+		ItfInfo root = ItfInfo.builder()
+				.fieldName("Root")
+				.itfType('G')
+				.nodeValue(ItfInfo.NodeValue.builder()
+						.index(0)
+						.size(1)
+						.type(StringUtils.TYPE_OBJECT)
+						.visible(true)
+						.build())
+				.nodes(Arrays.asList(test))
+				.build();
 
 		String fixedLength = transform.transformJsonToFixedLength(req,root);
 		log.info("전문 > {}", fixedLength);

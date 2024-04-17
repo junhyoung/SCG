@@ -1,13 +1,10 @@
 package com.example.service1.transform;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @Builder
 public class ItfInfo {
 
@@ -18,17 +15,41 @@ public class ItfInfo {
     private List<ItfInfo> nodes;
 
     @Data
-    @AllArgsConstructor
+    @Builder
     public static class NodeValue {
         // 상위 Info 에서 현재 필드의 인덱스
         private int index;
         // 현재 필드의 크기
-        private int size;
-        // 해당 필드 데이터타입 (예를들면 int, string, boolean, map 등)
+        @Builder.Default
+        private int size = 0;
+        @Builder.Default
+        private int fsize = 0;
         private String type;
         private String nodeId;
         private String desc;
-        private boolean visible;
-        private boolean nullable;
+        @Builder.Default
+        private boolean visible = true;
+        @Builder.Default
+        private boolean nullable = false;
+
+        @Builder
+        public NodeValue(int index, int size, int fsize, String type, String nodeId, String desc, boolean visible, boolean nullable) {
+            this.index = index;
+            this.size = size;
+            this.fsize = fsize;
+            this.type = type;
+            this.nodeId = nodeId;
+            this.desc = desc;
+            this.visible = visible;
+            this.nullable = nullable;
+        }
+    }
+
+    @Builder
+    public ItfInfo(String fieldName, char itfType, NodeValue nodeValue, List<ItfInfo> nodes) {
+        this.fieldName = fieldName;
+        this.itfType = itfType;
+        this.nodeValue = nodeValue;
+        this.nodes = nodes;
     }
 }

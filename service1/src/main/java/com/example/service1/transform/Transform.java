@@ -65,27 +65,41 @@ public class Transform {
         return resultBuilder.toString();
     }
 
-    public String formatIntWithZeroPadding(int number, int size) {
-        // %0Nd를 사용하여 숫자를 N 길이의 문자열로 포맷팅하고, 왼쪽 누락된 자리는 0으로 채웁니다.
-        String format = String.format("%%0%dd", size);
-        return String.format(format, number);
-    }
+    public String paddingInt(String str, int size) {
+        byte[] buff = str.getBytes();
 
-    public String formatDoubleWithZeroPadding(double number, int totalLength) {
-        // 문자열로 변환하여 먼저 길이를 확인
-        String numberStr = String.valueOf(number);
-        // 실제 숫자 부분의 길이 계산 (소수점과 소수점 이하 자릿수 포함)
-        int decimalPointIndex = numberStr.indexOf(".");
-        int requiredPadding = totalLength - numberStr.length();
-
-        // 필요한 0 패딩을 계산
-        StringBuilder padding = new StringBuilder();
-        for (int i = 0; i < requiredPadding; i++) {
-            padding.append('0');
+        if (size < buff.length) {
+            return new String(buff, 0, size);
+        } else if (size == buff.length) {
+            return str;
         }
 
-        // 0 패딩을 숫자 앞에 추가
-        return padding.toString() + numberStr;
+        int i=0;
+        byte[] nbuff = new byte[size];
+        for (i = 0; i < (size - buff.length); i++) {
+            nbuff[i] = (byte)'0';
+        }
+        System.arraycopy(buff, 0, nbuff, i, buff.length);
+        return new String(nbuff);
+     }
+
+    public String paddingFloat(String str, int size, int fsize) {
+        StringBuffer strBuf = new StringBuffer();
+        String[] tokens = null;
+        if (str != null && str.contains(".")) {
+            tokens = str.split("\\.");
+        } else {
+            tokens = new String[]{str, ""};
+        }
+
+        if (tokens.length == 2) {
+            assert tokens[0] != null;
+            strBuf.append(paddingInt(tokens[0], size - fsize - 1));
+            strBuf.append(".");
+            strBuf.append(paddingStr(tokens[1], fsize, StringUtils.BYTE_ZERO, StringUtils.CHARSET_UTF8));
+        }
+
+        return strBuf.toString();
     }
 
 
@@ -101,34 +115,41 @@ public class Transform {
         } else {
             // 바이트 길이에 맞게 문자를 추가하여 패딩
             return switch (type) {
-                case StringUtils.TYPE_INT -> formatIntWithZeroPadding(Integer.parseInt(str), size);
-                case StringUtils.TYPE_FLOAT -> formatDoubleWithZeroPadding(Double.parseDouble(str), size);
-                default -> padWithCharacter(str, size, StringUtils.HYPHEN);
+                case StringUtils.TYPE_INT -> paddingInt(str, size);
+                case StringUtils.TYPE_FLOAT -> paddingFloat(str, size, itfInfo.getNodeValue().getFsize());
+                default -> paddingStr(str, size, StringUtils.BYTE_SPACE, StringUtils.CHARSET_UTF8);
             };
         }
     }
 
     // UTF-8 바이트 길이에 맞게 문자열을 잘라내는 메서드
-    private String cutStringToByteLength(String str, int maxLengthInBytes) {
+    public String cutStringToByteLength(String str, int maxLengthInBytes) {
         byte[] strBytes = str.getBytes(StandardCharsets.UTF_8);
         if (strBytes.length <= maxLengthInBytes) {
-            return str;
+            return str;  // 입력 길이가 제한보다 작거나 같다면 변환 없이 반환
         }
 
-        int actualLength = maxLengthInBytes;
-
-        // 멀티바이트 문자의 경계를 조정합니다
-        while (actualLength > 0 && (strBytes[actualLength - 1] & 0xC0) == 0x80) {
-            actualLength--;  // 멀티바이트 문자의 시작 바이트로 이동
+        int byteCount = 0; // 실제 사용할 바이트 수를 계산
+        int i = 0;  // 바이트 배열을 탐색하는 인덱스
+        while (i < strBytes.length && byteCount < maxLengthInBytes) {
+            if ((strBytes[i] & 0x80) == 0) { // 1바이트 문자
+                byteCount++;
+            } else if ((strBytes[i] & 0xE0) == 0xC0) { // 2바이트 문자 시작
+                if (byteCount + 2 > maxLengthInBytes) break; // 추가하면 maxLength 초과하므로 중단
+                byteCount += 2;
+            } else if ((strBytes[i] & 0xF0) == 0xE0) { // 3바이트 문자 시작
+                if (byteCount + 3 > maxLengthInBytes) break; // 추가하면 maxLength 초과하므로 중단
+                byteCount += 3;
+            } else if ((strBytes[i] & 0xF8) == 0xF0) { // 4바이트 문자 시작
+                if (byteCount + 4 > maxLengthInBytes) break; // 추가하면 maxLength 초과하므로 중단
+                byteCount += 4;
+            }
+            i++;
         }
 
-        // UTF-8 첫 바이트의 경계에서 정확하게 자르기 위한 추가 검사
-        if (actualLength > 0 && (strBytes[actualLength - 1] & 0xC0) == 0xC0) {
-            actualLength--;  // 첫 바이트를 더 후퇴시켜 자릅니다.
-        }
+        String resultString = new String(strBytes, 0, byteCount, StandardCharsets.UTF_8); // 최대 길이 내의 문자열 생성
 
-        String resultString = new String(strBytes, 0, actualLength, StandardCharsets.UTF_8);
-        return padWithCharacter(resultString, maxLengthInBytes, StringUtils.HYPHEN);
+        return paddingStr(resultString, maxLengthInBytes, StringUtils.BYTE_SPACE, StringUtils.CHARSET_UTF8);
 
     }
 
@@ -141,6 +162,29 @@ public class Transform {
             strBytes = stringBuilder.toString().getBytes(StandardCharsets.UTF_8);
         }
         return stringBuilder.toString();
+    }
+
+    public String paddingStr(String str, int size, byte FILTER, String charset) {
+        try {
+            byte[] buff = null;
+            if (charset == null || "".equals(charset)) {
+                buff = str.getBytes();
+            } else {
+                buff = str.getBytes(charset);
+            }
+
+            int i=0;
+            byte[] nbuff = new byte[size];
+            System.arraycopy(buff, 0, nbuff, 0, buff.length);
+            for (i = buff.length; i < size; i++) {
+                nbuff[i] = FILTER;
+            }
+
+            return new String(nbuff, charset);
+        } catch (Exception e){
+            log.debug(e.getMessage(), e);
+        }
+        return null;
     }
 
 
@@ -160,34 +204,40 @@ public class Transform {
         return resultMap;
     }
 
+    // 메소드 정의: 고정 길이의 바이트 배열을 파싱하여 Map 객체로 변환
     private int parseFixedLengthString(byte[] dataBytes, int start, ItfInfo info, Map<String, Object> map) {
+        // 현재 처리 위치 초기화
         int localStart = start;
+
         List<ItfInfo> sortedNodes = new ArrayList<>(info.getNodes());
         sortedNodes.sort(Comparator.comparingInt(a -> a.getNodeValue().getIndex()));
 
         for (ItfInfo child : sortedNodes) {
             String key = child.getFieldName();
             int fieldLength = child.getNodeValue().getSize();
-            int count = 1; // 기본적으로 1회 반복
+            int count = 1;
 
-            // _cnt 키의 존재 여부 확인하여 반복 횟수 설정
             String countKey = key + StringUtils.CNT_SUFFIX;
             if (map.containsKey(countKey)) {
                 count = Integer.parseInt((String) map.get(countKey));
             }
 
             for (int i = 0; i < count; i++) {
+                // Parse data but do not add to map if not visible
+                if (!child.getNodeValue().isVisible()) {
+                    localStart += (child.getItfType() == ItfType.FIELD.getType()) ? fieldLength : parseFixedLengthString(dataBytes, localStart, child, new HashMap<>());
+                    continue; // Skip adding to map
+                }
+
                 if (child.getItfType() == ItfType.FIELD.getType()) {
                     String fieldValue = new String(dataBytes, localStart, fieldLength, StandardCharsets.UTF_8).trim();
                     localStart += fieldLength;
 
                     if (StringUtils.TYPE_LIST.equals(child.getNodeValue().getType()) || count > 1) {
-                        // 타입이 'List'이거나 _cnt 값이 1보다 큰 경우 배열 처리
                         List<Object> list = (List<Object>) map.getOrDefault(key, new ArrayList<>());
                         list.add(fieldValue);
                         map.put(key, list);
                     } else {
-                        // 타입이 'List'가 아니고 _cnt 값이 1인 경우 단일 객체 처리
                         map.put(key, fieldValue);
                     }
                 } else if (child.getItfType() == ItfType.GROUP.getType()) {
@@ -195,12 +245,10 @@ public class Transform {
                     int parsedLength = parseFixedLengthString(dataBytes, localStart, child, childMap);
 
                     if (StringUtils.TYPE_LIST.equals(child.getNodeValue().getType()) || count > 1) {
-                        // 타입이 'List'이거나 _cnt 값이 1보다 큰 경우 배열 처리
                         List<Map<String, Object>> childList = (List<Map<String, Object>>) map.getOrDefault(key, new ArrayList<>());
                         childList.add(childMap);
                         map.put(key, childList);
                     } else {
-                        // 타입이 'List'가 아니고 _cnt 값이 1인 경우 단일 객체 처리
                         map.put(key, childMap);
                     }
                     localStart += parsedLength;
@@ -217,132 +265,4 @@ public class Transform {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
     }
 
-
-
-    /*
-     *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-     *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*        MAIN 함수 TEST      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-     *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-     */
-
-
-/*
-    public static void main(String[] args) throws JsonProcessingException {
-        ItfInfo title = new ItfInfo(
-                "title",
-                'F',
-                new ItfInfo.NodeValue(1, 7, StringUtils.TYPE_STRING, "title", "test", true, false),
-                null
-        );
-        ItfInfo personalItfInfo = new ItfInfo(
-                "personalInfo",
-                'G',
-                new ItfInfo.NodeValue(0, 2, StringUtils.TYPE_OBJECT, "personalInfo", "Personal Information Group", true, false),
-                Arrays.asList(
-                        new ItfInfo("email", 'F', new ItfInfo.NodeValue(1, 30, StringUtils.TYPE_STRING, "email", "Email of the person", true, false), null),
-                        new ItfInfo("name", 'F', new ItfInfo.NodeValue(0, 10, StringUtils.TYPE_STRING, "name", "Name of the person", true, false), null)
-                )
-        );
-        ItfInfo education_cnt = new ItfInfo(
-                "education_cnt",
-                'F',
-                new ItfInfo.NodeValue(2, 5, StringUtils.TYPE_INT, "education_cnt", "education_cnt", true, false),
-                null
-        );
-        ItfInfo projects_cnt = new ItfInfo(
-                "projects_cnt",
-                'F',
-                new ItfInfo.NodeValue(4, 5, StringUtils.TYPE_INT, "projects_cnt", "projects_cnt", true, false),
-                null
-        );
-        ItfInfo education = new ItfInfo(
-                "education",
-                'G',
-                new ItfInfo.NodeValue(3, 3, StringUtils.TYPE_LIST, "education", "Education Information Group", true, false),
-                Arrays.asList(
-                        new ItfInfo("degree", 'F', new ItfInfo.NodeValue(1, 50, StringUtils.TYPE_STRING, "degree", "Degree obtained", true, false), null),
-                        new ItfInfo("institution", 'G', new ItfInfo.NodeValue(0, 2, StringUtils.TYPE_OBJECT, "institution", "Institution Information", true, false),
-                                Arrays.asList(
-                                        new ItfInfo("name", 'F', new ItfInfo.NodeValue(2, 20,  StringUtils.TYPE_STRING, "name", "name Test Field", true, false), null),
-                                        new ItfInfo("test", 'F', new ItfInfo.NodeValue(1, 20,  StringUtils.TYPE_STRING, "test", "Test Field", true, false), null),
-                                        new ItfInfo("test2", 'F', new ItfInfo.NodeValue(0, 20, StringUtils.TYPE_STRING, "test2", "Second Test Field", true, false), null)
-                                )),
-                        new ItfInfo("year", 'F', new ItfInfo.NodeValue(2, 10, StringUtils.TYPE_FLOAT, "year", "Year of Graduation", true, false), null)
-                )
-        );
-
-        ItfInfo project = new ItfInfo(
-                "projects",
-                'G',
-                new ItfInfo.NodeValue(5, 4, StringUtils.TYPE_LIST, "project1", "First Project", true, false),
-                Arrays.asList(
-                        new ItfInfo("title", 'F', new ItfInfo.NodeValue(0, 30, StringUtils.TYPE_STRING, "title", "Project Title", true, false), null),
-                        new ItfInfo("description", 'F', new ItfInfo.NodeValue(1, 100, StringUtils.TYPE_STRING, "description", "Project Description", true, false), null),
-                        new ItfInfo("technologies", 'F', new ItfInfo.NodeValue(2, 100, "Array", "technologies", "Technologies Used", true, false), null)
-                )
-        );
-
-        ItfInfo root = new ItfInfo(
-                "Root",
-                'G',
-                new ItfInfo.NodeValue(0, 3, StringUtils.TYPE_OBJECT, "root", "Root Node", true, false),
-                Arrays.asList(title, personalItfInfo, education, project, education_cnt,projects_cnt)
-        );
-
-
-        String json = "{\n" +
-                "  \"title\": \"타이틀\",\n" +
-                "  \"personalInfo\": {\n" +
-                "    \"name\": \"Jane Doe\",\n" +
-                "    \"email\": \"jane.doe@example.com\",\n" +
-                "    \"location\": \"New York, NY\"\n" +
-                "  },\n" +
-                "  \"education_cnt\": 2,\n" +
-                "  \"education\": [\n" +
-                "    {\n" +
-                "      \"degree\": \"Bachelor of Science in Computer Science\",\n" +
-                "      \"institution\": {\n" +
-                "        \"name\": \"University of Example\",\n" +
-                "        \"test\": \"Example Value 1\",\n" +
-                "        \"test2\": \"Example Value 2\"\n" +
-                "      },\n" +
-                "      \"year\": 2020.122\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"degree\": \"Master of Science in Artificial Intelligence\",\n" +
-                "      \"institution\": {\n" +
-                "        \"name\": \"Institute of Advanced Study\",\n" +
-                "        \"test\": \"Advanced Example 1\",\n" +
-                "        \"test2\": \"Advanced Example 2\"\n" +
-                "      },\n" +
-                "      \"year\": 2022\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"projects\": [\n" +
-                "    {\n" +
-                "      \"title\": \"Smart Agriculture System\",\n" +
-                "      \"description\": \"Developed a system to optimize water usage for farming using IoT sensors and AI.\",\n" +
-                "      \"technologies\": [\"IoT\", \"Artificial Intelligence\", \"Cloud Computing\"]\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"title\": \"E-Health Record Management System\",\n" +
-                "      \"description\": \"Designed and implemented a secure and scalable web application for managing patient records.\",\n" +
-                "      \"technologies\": [\"Web Development\", \"Database Management\", \"Cybersecurity\"]\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"projects_cnt\": 2\n" +
-                "}\n";
-        try {
-           String fixedLengthStr = transformJsonToFixedLength(json, root);
-
-            Map<String, Object> resultMap = transformFixedLengthToMap(fixedLengthStr, root);
-            String jsonResult = mapToJson(resultMap);
-            System.out.println("fixed to json >> " + jsonResult);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-    */
 }
