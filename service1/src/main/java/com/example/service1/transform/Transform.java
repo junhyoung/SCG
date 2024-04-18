@@ -1,10 +1,13 @@
 package com.example.service1.transform;
 
+import com.example.service1.resolver.Resolver;
+import com.example.service1.resolver.ResolverFactory;
 import com.example.service1.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -13,6 +16,13 @@ import java.util.*;
 @Slf4j
 @Service
 public class Transform {
+
+    private final ResolverFactory rf;
+    @Autowired
+    public Transform(ResolverFactory resolverFactory) {
+        this.rf = resolverFactory;
+    }
+
 
     /*
      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -49,7 +59,30 @@ public class Transform {
 
                 // 필드 타입이 'F'인 경우 값을 직접 추출
                 if (childNodeInfo.getItfType() == NodeType.FIELD.getType() && childObj != null) {
-                    String paddStr = handleFieldLength(childObj.toString(), childNodeInfo);
+
+                    String value = childObj.toString();
+
+                    // 여기에서부터 필드관련 처리를 진행한다. 암호화, 패딩, 마스킹, 등등
+                    if (childNodeInfo.getNodeValue().getEncrypt() != null) {
+                        log.info("암호화");
+                        Resolver resolver = rf.getResolver(childNodeInfo.getNodeValue().getEncrypt());
+                        value = resolver.resolve(value);
+                    }
+
+                    if (childNodeInfo.getNodeValue().getDecrypt() != null) {
+                        log.info("복호화");
+                        Resolver resolver = rf.getResolver(childNodeInfo.getNodeValue().getDecrypt());
+                        value = resolver.resolve(value);
+                    }
+
+                    if (childNodeInfo.getNodeValue().getMasking() != null) {
+                        log.info("마스킹");
+                        Resolver resolver = rf.getResolver(childNodeInfo.getNodeValue().getMasking());
+                        value = resolver.resolve(value);
+                    }
+
+                    String paddStr = handleFieldLength(value, childNodeInfo);
+
                     resultBuilder.append(paddStr);
                 } else if (childNodeInfo.getItfType() == NodeType.GROUP.getType() && childObj != null) {
                     // 필드 타입이 'G'인 경우 재귀적으로 처리

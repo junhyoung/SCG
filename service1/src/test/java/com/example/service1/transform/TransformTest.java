@@ -3,15 +3,18 @@ package com.example.service1.transform;
 import com.example.service1.util.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class TransformTest {
 
-    Transform transform = new Transform();
+    @Autowired
+    Transform transform;
 
     @Test
     void cutStringToByteLengthTest() {
@@ -28,9 +31,10 @@ class TransformTest {
                 .itfType('F')
                 .nodeValue(NodeInfo.NodeValue.builder()
                         .index(1)
-                        .size(7)
+                        .size(20)
                         .type(StringUtils.TYPE_STRING)
                         .visible(true)
+                        .decrypt("decryptResolver")
                         .build())
                 .build();
         NodeInfo personalInfo = NodeInfo.builder()

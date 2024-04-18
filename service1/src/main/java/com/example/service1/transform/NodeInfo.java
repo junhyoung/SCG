@@ -32,8 +32,17 @@ public class NodeInfo {
         @Builder.Default
         private boolean nullable = false;
 
+        @Builder.Default
+        private String encrypt = null;
+
+        @Builder.Default
+        private String decrypt = null;
+
+        @Builder.Default
+        private String masking = null;
+
         @Builder
-        public NodeValue(int index, int size, int fsize, String type, String nodeId, String desc, boolean visible, boolean nullable) {
+        public NodeValue(int index, int size, int fsize, String type, String nodeId, String desc, boolean visible, boolean nullable, String encrypt, String decrypt, String masking) {
             this.index = index;
             this.size = size;
             this.fsize = fsize;
@@ -42,7 +51,11 @@ public class NodeInfo {
             this.desc = desc;
             this.visible = visible;
             this.nullable = nullable;
+            this.encrypt = encrypt;
+            this.decrypt = decrypt;
+            this.masking = masking;
         }
+
     }
 
     @Builder
