@@ -34,7 +34,8 @@ class TransformTest {
                         .size(20)
                         .type(StringUtils.TYPE_STRING)
                         .visible(true)
-                        .decrypt("decryptResolver")
+//                        .decrypt("decryptResolver")
+                        .masking("maskingResolverName")
                         .build())
                 .build();
         NodeInfo personalInfo = NodeInfo.builder()
@@ -136,7 +137,7 @@ class TransformTest {
 
 
         String json = "{\n" +
-                "  \"title\": \"1호11\",\n" +
+                "  \"title\": \"이지성\",\n" +
                 "  \"personalInfo\": {\n" +
                 "    \"name\": \"Jane Doe\",\n" +
                 "    \"email\": \"jane.doe@example.com\",\n" +

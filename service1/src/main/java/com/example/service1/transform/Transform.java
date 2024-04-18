@@ -63,21 +63,10 @@ public class Transform {
                     String value = childObj.toString();
 
                     // 여기에서부터 필드관련 처리를 진행한다. 암호화, 패딩, 마스킹, 등등
-                    if (childNodeInfo.getNodeValue().getEncrypt() != null) {
-                        log.info("암호화");
-                        Resolver resolver = rf.getResolver(childNodeInfo.getNodeValue().getEncrypt());
-                        value = resolver.resolve(value);
-                    }
 
                     if (childNodeInfo.getNodeValue().getDecrypt() != null) {
                         log.info("복호화");
                         Resolver resolver = rf.getResolver(childNodeInfo.getNodeValue().getDecrypt());
-                        value = resolver.resolve(value);
-                    }
-
-                    if (childNodeInfo.getNodeValue().getMasking() != null) {
-                        log.info("마스킹");
-                        Resolver resolver = rf.getResolver(childNodeInfo.getNodeValue().getMasking());
                         value = resolver.resolve(value);
                     }
 
@@ -260,6 +249,21 @@ public class Transform {
                 if (child.getItfType() == NodeType.FIELD.getType()) {
                     // 데이터를 문자열로 변환 및 앞뒤 공백 제거
                     String fieldValue = new String(dataBytes, localStart, fieldLength, StandardCharsets.UTF_8).trim();
+
+                    // 암호화 및 마스킹 체크
+                    if (child.getNodeValue().getEncrypt() != null) {
+                        log.info("암호화");
+                        Resolver resolver = rf.getResolver(child.getNodeValue().getEncrypt());
+                        fieldValue = resolver.resolve(fieldValue);
+                    }
+
+                    if (child.getNodeValue().getMasking() != null) {
+                        log.info("마스킹");
+                        Resolver resolver = rf.getResolver(child.getNodeValue().getMasking());
+                        fieldValue = resolver.resolve(fieldValue);
+                    }
+
+
                     localStart += fieldLength; // 처리 위치 업데이트
 
                     // 리스트 타입 또는 반복 횟수가 1보다 많은 경우 리스트 처리
