@@ -1,8 +1,10 @@
 package com.example.service1.transform;
 
+import com.example.service1.apis.ApiContext;
 import com.example.service1.resolver.Resolver;
 import com.example.service1.resolver.ResolverFactory;
-import com.example.service1.util.StringUtils;
+import com.example.service1.util.SecurityUtil;
+import com.example.service1.util.StringUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,11 +19,14 @@ import java.util.*;
 @Service
 public class Transform {
 
-    private final ResolverFactory rf;
+    private final ResolverFactory resolverFactory;
     @Autowired
     public Transform(ResolverFactory resolverFactory) {
-        this.rf = resolverFactory;
+        this.resolverFactory = resolverFactory;
     }
+
+    // 임시로 선언해둠
+    private ApiContext apiContext;
 
 
     /*
@@ -29,9 +34,10 @@ public class Transform {
      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*        JSON > 전문         *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
      */
-    public String transformJsonToFixedLength(String json, NodeInfo rootNodeInfo) throws JsonProcessingException {
+    public String transformJsonToFixedLength(String json, NodeInfo rootNodeInfo, ApiContext apiContext) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(json);
+        this.apiContext = apiContext;
 
         // 결과를 저장할 StringBuilder 생성
         StringBuilder resultBuilder = new StringBuilder();
@@ -60,17 +66,18 @@ public class Transform {
                 // 필드 타입이 'F'인 경우 값을 직접 추출
                 if (childNodeInfo.getItfType() == NodeType.FIELD.getType() && childObj != null) {
 
-                    String value = childObj.toString();
+                    String fieldValue = childObj.toString();
 
-                    // 여기에서부터 필드관련 처리를 진행한다. 암호화, 패딩, 마스킹, 등등
+                    // 여기에서부터 필드관련 처리를 진행한다. 복호화 등
 
                     if (childNodeInfo.getNodeValue().getDecrypt() != null) {
-                        log.info("복호화");
-                        Resolver resolver = rf.getResolver(childNodeInfo.getNodeValue().getDecrypt());
-                        value = resolver.resolve(value);
+                        log.info("복호화 전 >> " + fieldValue);
+                        Resolver resolver = resolverFactory.getResolver(childNodeInfo.getNodeValue().getDecrypt());
+                        fieldValue = resolver.resolve(fieldValue, SecurityUtil.getEncryptKey(apiContext.getClientSecret(), apiContext.getTimestamp())).toString();
+                        log.info("복호화 후 >> " + fieldValue);
                     }
 
-                    String paddStr = handleFieldLength(value, childNodeInfo);
+                    String paddStr = handleFieldLength(fieldValue, childNodeInfo);
 
                     resultBuilder.append(paddStr);
                 } else if (childNodeInfo.getItfType() == NodeType.GROUP.getType() && childObj != null) {
@@ -118,7 +125,7 @@ public class Transform {
             assert tokens[0] != null;
             strBuf.append(paddingInt(tokens[0], size - fsize - 1));
             strBuf.append(".");
-            strBuf.append(paddingStr(tokens[1], fsize, StringUtils.BYTE_ZERO, StringUtils.CHARSET_UTF8));
+            strBuf.append(paddingStr(tokens[1], fsize, StringUtil.BYTE_ZERO, StringUtil.CHARSET_UTF8));
         }
 
         return strBuf.toString();
@@ -137,9 +144,9 @@ public class Transform {
         } else {
             // 바이트 길이에 맞게 문자를 추가하여 패딩
             return switch (type) {
-                case StringUtils.TYPE_INT -> paddingInt(str, size);
-                case StringUtils.TYPE_FLOAT -> paddingFloat(str, size, nodeInfo.getNodeValue().getFsize());
-                default -> paddingStr(str, size, StringUtils.BYTE_SPACE, StringUtils.CHARSET_UTF8);
+                case StringUtil.TYPE_INT -> paddingInt(str, size);
+                case StringUtil.TYPE_FLOAT -> paddingFloat(str, size, nodeInfo.getNodeValue().getFsize());
+                default -> paddingStr(str, size, StringUtil.BYTE_SPACE, StringUtil.CHARSET_UTF8);
             };
         }
     }
@@ -171,7 +178,7 @@ public class Transform {
 
         String resultString = new String(strBytes, 0, byteCount, StandardCharsets.UTF_8); // 최대 길이 내의 문자열 생성
 
-        return paddingStr(resultString, maxLengthInBytes, StringUtils.BYTE_SPACE, StringUtils.CHARSET_UTF8);
+        return paddingStr(resultString, maxLengthInBytes, StringUtil.BYTE_SPACE, StringUtil.CHARSET_UTF8);
 
     }
 
@@ -231,7 +238,7 @@ public class Transform {
             int count = 1;                                   // 기본적으로 한 번만 처리
 
             // 반복 횟수 지정 (_cnt 접미사 확인)
-            String countKey = key + StringUtils.CNT_SUFFIX;
+            String countKey = key + StringUtil.CNT_SUFFIX;
             if (map.containsKey(countKey)) {
                 count = Integer.parseInt((String) map.get(countKey)); // 맵에서 반복 횟수 가져오기
             }
@@ -252,22 +259,24 @@ public class Transform {
 
                     // 암호화 및 마스킹 체크
                     if (child.getNodeValue().getEncrypt() != null) {
-                        log.info("암호화");
-                        Resolver resolver = rf.getResolver(child.getNodeValue().getEncrypt());
-                        fieldValue = resolver.resolve(fieldValue);
+                        log.info("암호화 전 >> " + fieldValue);
+                        Resolver resolver = resolverFactory.getResolver(child.getNodeValue().getEncrypt());
+                        fieldValue = resolver.resolve(fieldValue, SecurityUtil.getEncryptKey(apiContext.getClientSecret(), apiContext.getTimestamp())).toString();
+                        System.out.println("암호화 후 >> " + fieldValue);
                     }
 
                     if (child.getNodeValue().getMasking() != null) {
-                        log.info("마스킹");
-                        Resolver resolver = rf.getResolver(child.getNodeValue().getMasking());
-                        fieldValue = resolver.resolve(fieldValue);
-                    }
+                        log.info("마스킹 전 >> " + fieldValue);
+                        Resolver resolver = resolverFactory.getResolver(child.getNodeValue().getMasking());
+                        fieldValue = resolver.resolve(fieldValue).toString();
+                        System.out.println("마스킹 후 >> " + fieldValue);
 
+                    }
 
                     localStart += fieldLength; // 처리 위치 업데이트
 
                     // 리스트 타입 또는 반복 횟수가 1보다 많은 경우 리스트 처리
-                    if (StringUtils.TYPE_LIST.equals(child.getNodeValue().getType()) || count > 1) {
+                    if (StringUtil.TYPE_LIST.equals(child.getNodeValue().getType()) || count > 1) {
                         List<Object> list = (List<Object>) map.getOrDefault(key, new ArrayList<>());
                         list.add(fieldValue);
                         map.put(key, list);
@@ -280,7 +289,7 @@ public class Transform {
                     int parsedLength = parseFixedLengthString(dataBytes, localStart, child, childMap);
 
                     // 리스트 처리 또는 단일 객체 처리
-                    if (StringUtils.TYPE_LIST.equals(child.getNodeValue().getType()) || count > 1) {
+                    if (StringUtil.TYPE_LIST.equals(child.getNodeValue().getType()) || count > 1) {
                         List<Map<String, Object>> childList = (List<Map<String, Object>>) map.getOrDefault(key, new ArrayList<>());
                         childList.add(childMap);
                         map.put(key, childList);

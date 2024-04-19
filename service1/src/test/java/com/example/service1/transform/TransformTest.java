@@ -1,14 +1,13 @@
 package com.example.service1.transform;
 
-import com.example.service1.util.StringUtils;
+import com.example.service1.apis.ApiContext;
+import com.example.service1.util.StringUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class TransformTest {
@@ -32,10 +31,11 @@ class TransformTest {
                 .nodeValue(NodeInfo.NodeValue.builder()
                         .index(1)
                         .size(20)
-                        .type(StringUtils.TYPE_STRING)
+                        .type(StringUtil.TYPE_STRING)
                         .visible(true)
-//                        .decrypt("decryptResolver")
-                        .masking("maskingResolverName")
+                        .decrypt("decryptResolver")
+                        .encrypt("encryptResolver")
+//                        .masking("maskingResolverName")
                         .build())
                 .build();
         NodeInfo personalInfo = NodeInfo.builder()
@@ -44,12 +44,12 @@ class TransformTest {
                 .nodeValue(NodeInfo.NodeValue.builder()
                         .index(0)
                         .size(2)
-                        .type(StringUtils.TYPE_OBJECT)
+                        .type(StringUtil.TYPE_OBJECT)
                         .visible(true)
                         .build())
                 .nodes(Arrays.asList(
-                        NodeInfo.builder().fieldName("name").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(10).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-                        NodeInfo.builder().fieldName("email").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(30).type(StringUtils.TYPE_STRING).visible(true).build()).build()
+                        NodeInfo.builder().fieldName("name").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(10).type(StringUtil.TYPE_STRING).visible(true).build()).build(),
+                        NodeInfo.builder().fieldName("email").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(30).type(StringUtil.TYPE_STRING).masking("maskingResolverEmail").visible(true).build()).build()
                 ))
                 .build();
         NodeInfo education_cnt = NodeInfo.builder()
@@ -58,7 +58,7 @@ class TransformTest {
                 .nodeValue(NodeInfo.NodeValue.builder()
                         .index(2)
                         .size(5)
-                        .type(StringUtils.TYPE_INT)
+                        .type(StringUtil.TYPE_INT)
                         .visible(true)
                         .build())
                 .build();
@@ -68,7 +68,7 @@ class TransformTest {
                 .nodeValue(NodeInfo.NodeValue.builder()
                         .index(4)
                         .size(5)
-                        .type(StringUtils.TYPE_INT)
+                        .type(StringUtil.TYPE_INT)
                         .visible(true)
                         .build())
                 .build();
@@ -78,31 +78,31 @@ class TransformTest {
                 .nodeValue(NodeInfo.NodeValue.builder()
                         .index(3)
                         .size(3)
-                        .type(StringUtils.TYPE_LIST)
+                        .type(StringUtil.TYPE_LIST)
                         .visible(true)
                         .build())
                 .nodes(Arrays.asList(
                         NodeInfo.builder().fieldName("degree").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
                                                                                 .index(0)
                                                                                 .size(50)
-                                                                                .type(StringUtils.TYPE_STRING)
+                                                                                .type(StringUtil.TYPE_STRING)
                                                                                 .visible(true)
                                                                                 .build()).build(),
                         NodeInfo.builder().fieldName("year").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
                                                                                 .index(1)
                                                                                 .size(10)
-                                                                                .type(StringUtils.TYPE_INT)
+                                                                                .type(StringUtil.TYPE_INT)
                                                                                 .visible(true)
                                                                                 .build()).build(),
                         NodeInfo.builder().fieldName("institution").itfType('G').nodeValue(NodeInfo.NodeValue.builder()
                                                                                 .index(2)
                                                                                 .size(2)
-                                                                                .type(StringUtils.TYPE_STRING)
+                                                                                .type(StringUtil.TYPE_STRING)
                                                                                 .visible(true).build())
                                                                 .nodes( Arrays.asList(
-                                                                        NodeInfo.builder().fieldName("name").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-                                                                        NodeInfo.builder().fieldName("test").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-                                                                        NodeInfo.builder().fieldName("test2").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(2).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build()
+                                                                        NodeInfo.builder().fieldName("name").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(20).type(StringUtil.TYPE_STRING).visible(true).build()).build(),
+                                                                        NodeInfo.builder().fieldName("test").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(20).type(StringUtil.TYPE_STRING).visible(true).build()).build(),
+                                                                        NodeInfo.builder().fieldName("test2").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(2).size(20).type(StringUtil.TYPE_STRING).visible(true).build()).build()
                                                                         )
                                                                 ).build())
                 ).build();
@@ -113,13 +113,13 @@ class TransformTest {
                 .nodeValue(NodeInfo.NodeValue.builder()
                         .index(5)
                         .size(4)
-                        .type(StringUtils.TYPE_LIST)
+                        .type(StringUtil.TYPE_LIST)
                         .visible(true)
                         .build())
                 .nodes(Arrays.asList(
-                        NodeInfo.builder().fieldName("title").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(30).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-                        NodeInfo.builder().fieldName("description").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(100).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-                        NodeInfo.builder().fieldName("technologies").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(2).size(100).type(StringUtils.TYPE_ARRAY).visible(true).build()).build()
+                        NodeInfo.builder().fieldName("title").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(30).type(StringUtil.TYPE_STRING).visible(true).build()).build(),
+                        NodeInfo.builder().fieldName("description").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(100).type(StringUtil.TYPE_STRING).visible(true).build()).build(),
+                        NodeInfo.builder().fieldName("technologies").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(2).size(100).type(StringUtil.TYPE_ARRAY).visible(true).build()).build()
                 ))
                 .build();
 
@@ -129,7 +129,7 @@ class TransformTest {
                 .nodeValue(NodeInfo.NodeValue.builder()
                         .index(0)
                         .size(1)
-                        .type(StringUtils.TYPE_OBJECT)
+                        .type(StringUtil.TYPE_OBJECT)
                         .visible(true)
                         .build())
                 .nodes(Arrays.asList(title, personalInfo, education, project, education_cnt,projects_cnt))
@@ -137,7 +137,7 @@ class TransformTest {
 
 
         String json = "{\n" +
-                "  \"title\": \"이지성\",\n" +
+                "  \"title\": \"HM+3HiBIlWVYyl507YRVPGCyUdIFf8OFTeuGiAaeyy05gLwZBRv3YdIzA17BBVAHUvip1Q==\",\n" +
                 "  \"personalInfo\": {\n" +
                 "    \"name\": \"Jane Doe\",\n" +
                 "    \"email\": \"jane.doe@example.com\",\n" +
@@ -185,7 +185,12 @@ class TransformTest {
                 "}\n";
 
         try {
-            String fixedLengthStr = transform.transformJsonToFixedLength(json, root);
+
+            ApiContext apiContext = new ApiContext();
+            apiContext.setClientSecret("jiseongtestsecret");
+            apiContext.setTimestamp("20240419173600000");
+
+            String fixedLengthStr = transform.transformJsonToFixedLength(json, root, apiContext);
 
             Map<String, Object> resultMap = transform.transformFixedLengthToMap(fixedLengthStr, root);
             String jsonResult = transform.mapToJson(resultMap);

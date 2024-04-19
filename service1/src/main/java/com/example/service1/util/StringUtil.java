@@ -1,6 +1,6 @@
 package com.example.service1.util;
 
-public class StringUtils {
+public class StringUtil {
 
 
     public static final byte BYTE_HYPHEN = (byte)'-';

@@ -1,10 +1,11 @@
 package com.example.service1.controller;
 
+import com.example.service1.apis.ApiContext;
 import com.example.service1.config.Service1Config;
 import com.example.service1.jwt.JwtTokenProvider;
 import com.example.service1.transform.NodeInfo;
 import com.example.service1.transform.Transform;
-import com.example.service1.util.StringUtils;
+import com.example.service1.util.StringUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,38 +64,38 @@ public class apiController {
 				.nodeValue(NodeInfo.NodeValue.builder()
 						.index(0)
 						.size(2)
-						.type(StringUtils.TYPE_OBJECT)
+						.type(StringUtil.TYPE_OBJECT)
 						.visible(true)
 						.build())
 				.nodes(Arrays.asList(
 						NodeInfo.builder().fieldName("name").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
 								.index(0)
 								.size(10)
-								.type(StringUtils.TYPE_STRING)
+								.type(StringUtil.TYPE_STRING)
 								.visible(true)
 								.build()).build(),
 						NodeInfo.builder().fieldName("age").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
 								.index(10)
 								.size(10)
-								.type(StringUtils.TYPE_INT)
+								.type(StringUtil.TYPE_INT)
 								.visible(false)
 								.build()).build(),
 						NodeInfo.builder().fieldName("birth").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
 								.index(2)
 								.size(10)
-								.type(StringUtils.TYPE_INT)
+								.type(StringUtil.TYPE_INT)
 								.visible(true)
 								.build()).build(),
 						NodeInfo.builder().fieldName("contact").itfType('G').nodeValue(NodeInfo.NodeValue.builder()
 										.index(3)
 										.size(2)
-										.type(StringUtils.TYPE_OBJECT)
+										.type(StringUtil.TYPE_OBJECT)
 										.visible(true).build())
 								.nodes( Arrays.asList(
-												NodeInfo.builder().fieldName("phone").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(20).type(StringUtils.TYPE_STRING).visible(false).build()).build(),
-												NodeInfo.builder().fieldName("email").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(20).type(StringUtils.TYPE_STRING).visible(true).build()).build(),
-												NodeInfo.builder().fieldName("varInt").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(2).size(20).type(StringUtils.TYPE_INT).visible(true).build()).build(),
-												NodeInfo.builder().fieldName("varFloat").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(3).size(20).fsize(4).type(StringUtils.TYPE_FLOAT).visible(true).build()).build()
+												NodeInfo.builder().fieldName("phone").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(20).type(StringUtil.TYPE_STRING).visible(false).build()).build(),
+												NodeInfo.builder().fieldName("email").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(20).type(StringUtil.TYPE_STRING).visible(true).build()).build(),
+												NodeInfo.builder().fieldName("varInt").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(2).size(20).type(StringUtil.TYPE_INT).visible(true).build()).build(),
+												NodeInfo.builder().fieldName("varFloat").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(3).size(20).fsize(4).type(StringUtil.TYPE_FLOAT).visible(true).build()).build()
 										)
 								).build())
 				).build();
@@ -105,13 +106,17 @@ public class apiController {
 				.nodeValue(NodeInfo.NodeValue.builder()
 						.index(0)
 						.size(1)
-						.type(StringUtils.TYPE_OBJECT)
+						.type(StringUtil.TYPE_OBJECT)
 						.visible(true)
 						.build())
 				.nodes(Arrays.asList(test))
 				.build();
 
-		String fixedLength = transform.transformJsonToFixedLength(req,root);
+		ApiContext apiContext = new ApiContext();
+		apiContext.setClientSecret("jiseongtestsecret");
+		apiContext.setTimestamp("20240419173600000");
+
+		String fixedLength = transform.transformJsonToFixedLength(req,root,apiContext);
 		log.info("전문 > {}", fixedLength);
 		Map<String, Object> resMap = transform.transformFixedLengthToMap(fixedLength,root);
 
