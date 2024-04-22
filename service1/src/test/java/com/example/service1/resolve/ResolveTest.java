@@ -1,7 +1,7 @@
 package com.example.service1.resolve;
 
-import com.example.service1.resolver.DecryptResolver;
-import com.example.service1.resolver.EncryptResolver;
+import com.example.service1.resolver.encrypt.DecryptResolver;
+import com.example.service1.resolver.encrypt.EncryptResolver;
 import com.example.service1.resolver.Resolver;
 import com.example.service1.resolver.ResolverFactory;
 import org.junit.jupiter.api.Test;

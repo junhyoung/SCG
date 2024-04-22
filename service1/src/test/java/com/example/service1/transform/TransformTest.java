@@ -33,9 +33,9 @@ class TransformTest {
                         .size(20)
                         .type(StringUtil.TYPE_STRING)
                         .visible(true)
-                        .decrypt("decryptResolver")
-                        .encrypt("encryptResolver")
-//                        .masking("maskingResolverName")
+                        .decrypt("DecryptDefaultResolver")
+                        .encrypt("EncryptDefaultResolver")
+//                        .masking("NameMaskingResolver")
                         .build())
                 .build();
         NodeInfo personalInfo = NodeInfo.builder()
@@ -49,7 +49,7 @@ class TransformTest {
                         .build())
                 .nodes(Arrays.asList(
                         NodeInfo.builder().fieldName("name").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(10).type(StringUtil.TYPE_STRING).visible(true).build()).build(),
-                        NodeInfo.builder().fieldName("email").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(30).type(StringUtil.TYPE_STRING).masking("maskingResolverEmail").visible(true).build()).build()
+                        NodeInfo.builder().fieldName("email").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(30).type(StringUtil.TYPE_STRING).masking("EmailMaskingResolver").visible(true).build()).build()
                 ))
                 .build();
         NodeInfo education_cnt = NodeInfo.builder()
@@ -137,7 +137,7 @@ class TransformTest {
 
 
         String json = "{\n" +
-                "  \"title\": \"HM+3HiBIlWVYyl507YRVPGCyUdIFf8OFTeuGiAaeyy05gLwZBRv3YdIzA17BBVAHUvip1Q==\",\n" +
+                "  \"title\": \"qNzJJdefjVAlQVL/V5yIxaxr2WGBhPIwqBroXY1iQHc=\",\n" +
                 "  \"personalInfo\": {\n" +
                 "    \"name\": \"Jane Doe\",\n" +
                 "    \"email\": \"jane.doe@example.com\",\n" +

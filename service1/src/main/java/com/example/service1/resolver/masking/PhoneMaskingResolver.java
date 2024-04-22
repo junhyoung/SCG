@@ -1,5 +1,6 @@
-package com.example.service1.resolver;
+package com.example.service1.resolver.masking;
 
+import com.example.service1.resolver.Resolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -7,8 +8,8 @@ import org.springframework.stereotype.Component;
 	9)전화번호(자택)		/ 전화번호 가운데 '*' 처리 (예, 02-****-6545)
  */
 @Slf4j
-@Component("maskingResolverPhone")
-public class MaskingResolverPhone extends Resolver {
+@Component("PhoneMaskingResolver")
+public class PhoneMaskingResolver extends Resolver {
 
 	public static final char	MASKING_CHAR		= '*';
 	public static final int		MASKING_FIRST_LEN	= 3;
@@ -43,7 +44,7 @@ public class MaskingResolverPhone extends Resolver {
 
 	public static void main(String[] args) {
 		try {
-			MaskingResolverPhone maskingResolverHPhone = new MaskingResolverPhone();
+			PhoneMaskingResolver maskingResolverHPhone = new PhoneMaskingResolver();
 			String phone = "02-1234-1234";
 			System.out.println("phone : " + phone);
 			System.out.println("phone : " + maskingResolverHPhone.resolve(phone));

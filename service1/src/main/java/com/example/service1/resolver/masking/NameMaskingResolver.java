@@ -1,5 +1,6 @@
-package com.example.service1.resolver;
+package com.example.service1.resolver.masking;
 
+import com.example.service1.resolver.Resolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -8,8 +9,8 @@ import org.springframework.stereotype.Component;
 	6)성명				/ 성명중 일부 (예, 홀*찬) // 건별고개기본사항/계약사항 조회화면에서는 '*'표 미처리, 명단에서는 가운데 자리 '*' 처리
  */
 @Slf4j
-@Component("maskingResolverName")
-public class MaskingResolverName extends Resolver {
+@Component("NameMaskingResolver")
+public class NameMaskingResolver extends Resolver {
 
 	public static final char	MASKING_CHAR	= '*';
 
@@ -41,8 +42,8 @@ public class MaskingResolverName extends Resolver {
 
 	public static void main(String[] args) {
 		try {
-			MaskingResolverName maskingResolverName = new MaskingResolverName();
-			System.out.println("name : " + maskingResolverName.resolve("홍길동"));
+			NameMaskingResolver nameMaskingResolver = new NameMaskingResolver();
+			System.out.println("name : " + nameMaskingResolver.resolve("홍길동"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

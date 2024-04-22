@@ -1,5 +1,6 @@
-package com.example.service1.resolver;
+package com.example.service1.resolver.encrypt;
 
+import com.example.service1.resolver.Resolver;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.DecoderException;
@@ -17,7 +18,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
-@Component("decryptResolver")
+@Component("DecryptResolver")
 @Slf4j
 public class DecryptResolver extends Resolver {
 

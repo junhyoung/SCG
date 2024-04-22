@@ -1,8 +1,9 @@
-package com.example.service1.resolver;
+package com.example.service1.resolver.masking;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.example.service1.resolver.Resolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +12,8 @@ import org.springframework.stereotype.Component;
  */
 
 @Slf4j
-@Component("maskingResolverAddress")
-public class MaskingResolverAddress extends Resolver {
+@Component("AddressMaskingResolver")
+public class AddressMaskingResolver extends Resolver {
 
 	public static final char	MASKING_CHAR		= '*';
 	public static final int		MASKING_LEN	= 5;	
@@ -41,7 +42,7 @@ public class MaskingResolverAddress extends Resolver {
 
 	public static void main(String[] args) {
 		try {
-			MaskingResolverAddress maskingResolver = new MaskingResolverAddress();
+			AddressMaskingResolver maskingResolver = new AddressMaskingResolver();
 			System.out.println("socialId : " + maskingResolver.resolve("경기도 고양시 일산동구 백석동 흰돌마을 405-1002호"));
 		} catch (Exception e) {
 			e.printStackTrace();

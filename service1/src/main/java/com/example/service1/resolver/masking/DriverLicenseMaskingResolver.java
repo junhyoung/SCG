@@ -1,8 +1,9 @@
-package com.example.service1.resolver;
+package com.example.service1.resolver.masking;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.service1.resolver.Resolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +12,8 @@ import org.springframework.stereotype.Component;
  */
 
 @Slf4j
-@Component("maskingResolverDriverLicense")
-public class MaskingResolverDriverLicense extends Resolver {
+@Component("DriverLicenseMaskingResolver")
+public class DriverLicenseMaskingResolver extends Resolver {
 
 
 	public static final char	MASKING_CHAR		= '*';
@@ -83,7 +84,7 @@ public class MaskingResolverDriverLicense extends Resolver {
 
 	public static void main(String[] args) {
 		try {
-			MaskingResolverDriverLicense maskingResolver = new MaskingResolverDriverLicense();
+			DriverLicenseMaskingResolver maskingResolver = new DriverLicenseMaskingResolver();
 			System.out.println("socialId : " + maskingResolver.resolve("11-11-210146-90"));
 			System.out.println("socialId : " + maskingResolver.resolve("111121014690"));
 		} catch (Exception e) {

@@ -1,5 +1,6 @@
-package com.example.service1.resolver;
+package com.example.service1.resolver.masking;
 
+import com.example.service1.resolver.Resolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -7,8 +8,8 @@ import org.springframework.stereotype.Component;
 	8)이메일				/ ID 뒤 두글자 이상 '*' 처리 (예, a**@naver.com)
  */
 @Slf4j
-@Component("maskingResolverEmail")
-public class MaskingResolverEmail extends Resolver {
+@Component("EmailMaskingResolver")
+public class EmailMaskingResolver extends Resolver {
 
 	public static final char	MASKING_CHAR		= '*';
 	public static final int		MASKING_AFTER_POS	= 2;
@@ -47,10 +48,10 @@ public class MaskingResolverEmail extends Resolver {
 
 	public static void main(String[] args) {
 		try {
-			MaskingResolverEmail maskingResolverEMail = new MaskingResolverEmail();
+			EmailMaskingResolver EMailMaskingResolver = new EmailMaskingResolver();
 			String email = "test@naver.com";
 			System.out.println("email : " + email);
-			System.out.println("email : " + maskingResolverEMail.resolve(email));
+			System.out.println("email : " + EMailMaskingResolver.resolve(email));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

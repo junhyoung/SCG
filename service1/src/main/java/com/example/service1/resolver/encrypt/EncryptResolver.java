@@ -1,5 +1,6 @@
-package com.example.service1.resolver;
+package com.example.service1.resolver.encrypt;
 
+import com.example.service1.resolver.Resolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.Base64;
 
-@Component("encryptResolver")
+@Component("EncryptResolver")
 @Slf4j
 public class EncryptResolver extends Resolver {
     @Override

@@ -1,19 +1,19 @@
-package com.example.service1.resolver;
+package com.example.service1.resolver.masking;
 
+import com.example.service1.resolver.Resolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /*
-	12)계좌번호			/ 계좌번호 5번째 자리부터 4자리 '*' 처리
+	13)카드번호			/ 카드번호 7번째 자리부터 6자리 '*' 처리 (예, 1234-56**-****-7890)
  */
-
 @Slf4j
-@Component("maskingResolverAccountNum")
-public class MaskingResolverAccountNum extends Resolver {
+@Component("CardMaskingResolver")
+public class CardMaskingResolver extends Resolver {
 
 	public static final char	MASKING_CHAR		= '*';
-	public static final int		MASKING_FIRST_LEN	= 4;
-	public static final int		MASKING_MASKING_LEN	= 4;
+	public static final int		MASKING_FIRST_LEN	= 6;
+	public static final int		MASKING_MASKING_LEN	= 6;
 
 	@Override
 	public Object resolve(Object obj) {
@@ -53,20 +53,18 @@ public class MaskingResolverAccountNum extends Resolver {
 			}
 		}
 		String str = strBuf.toString();
-		log.debug("$$$$[MaskingResolverAccountNum-resolve] obj : " + obj + "--> " + str);
+		log.debug("$$$$[MaskingResolverCard-resolve] obj : " + obj + "--> " + str);
 
 		return str;
 	}
 
 	public static void main(String[] args) {
 		try {
-			MaskingResolverAccountNum maskingResolverAccountNum = new MaskingResolverAccountNum();
-			// --------------- // S
-			String accountNum = "010-2760-8446";
-			System.out.println("accountNum : " + accountNum);
-			System.out.println("accountNum : " + maskingResolverAccountNum.resolve("010-2760-8446"));
-			System.out.println("accountNum : " + maskingResolverAccountNum.resolve("514-013941-04-011"));
-			// --------------- // E
+			CardMaskingResolver cardMaskingResolver = new CardMaskingResolver();
+			String card = "1234-1234-1234-1234";
+			System.out.println("card : " + card);
+			System.out.println("card : " + cardMaskingResolver.resolve("1234-1234-1234-1234"));
+			System.out.println("card : " + cardMaskingResolver.resolve("1234-1234-1234-123"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
