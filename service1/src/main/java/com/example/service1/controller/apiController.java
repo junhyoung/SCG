@@ -59,8 +59,8 @@ public class apiController {
 		log.info("TRANSFORM!!");
 
 		NodeInfo test = NodeInfo.builder()
-				.fieldName("test")
-				.itfType('G')
+				.nodeName("test")
+				.nodeType('G')
 				.nodeValue(NodeInfo.NodeValue.builder()
 						.index(0)
 						.size(2)
@@ -68,41 +68,41 @@ public class apiController {
 						.visible(true)
 						.build())
 				.nodes(Arrays.asList(
-						NodeInfo.builder().fieldName("name").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
+						NodeInfo.builder().nodeName("name").nodeType('F').nodeValue(NodeInfo.NodeValue.builder()
 								.index(0)
 								.size(10)
 								.type(StringUtil.TYPE_STRING)
 								.visible(true)
 								.build()).build(),
-						NodeInfo.builder().fieldName("age").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
+						NodeInfo.builder().nodeName("age").nodeType('F').nodeValue(NodeInfo.NodeValue.builder()
 								.index(10)
 								.size(10)
 								.type(StringUtil.TYPE_INT)
 								.visible(false)
 								.build()).build(),
-						NodeInfo.builder().fieldName("birth").itfType('F').nodeValue(NodeInfo.NodeValue.builder()
+						NodeInfo.builder().nodeName("birth").nodeType('F').nodeValue(NodeInfo.NodeValue.builder()
 								.index(2)
 								.size(10)
 								.type(StringUtil.TYPE_INT)
 								.visible(true)
 								.build()).build(),
-						NodeInfo.builder().fieldName("contact").itfType('G').nodeValue(NodeInfo.NodeValue.builder()
+						NodeInfo.builder().nodeName("contact").nodeType('G').nodeValue(NodeInfo.NodeValue.builder()
 										.index(3)
 										.size(2)
 										.type(StringUtil.TYPE_OBJECT)
 										.visible(true).build())
 								.nodes( Arrays.asList(
-												NodeInfo.builder().fieldName("phone").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(20).type(StringUtil.TYPE_STRING).visible(false).build()).build(),
-												NodeInfo.builder().fieldName("email").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(20).type(StringUtil.TYPE_STRING).visible(true).build()).build(),
-												NodeInfo.builder().fieldName("varInt").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(2).size(20).type(StringUtil.TYPE_INT).visible(true).build()).build(),
-												NodeInfo.builder().fieldName("varFloat").itfType('F').nodeValue(NodeInfo.NodeValue.builder().index(3).size(20).fsize(4).type(StringUtil.TYPE_FLOAT).visible(true).build()).build()
+												NodeInfo.builder().nodeName("phone").nodeType('F').nodeValue(NodeInfo.NodeValue.builder().index(0).size(20).type(StringUtil.TYPE_STRING).visible(false).build()).build(),
+												NodeInfo.builder().nodeName("email").nodeType('F').nodeValue(NodeInfo.NodeValue.builder().index(1).size(20).type(StringUtil.TYPE_STRING).visible(true).build()).build(),
+												NodeInfo.builder().nodeName("varInt").nodeType('F').nodeValue(NodeInfo.NodeValue.builder().index(2).size(20).type(StringUtil.TYPE_INT).visible(true).build()).build(),
+												NodeInfo.builder().nodeName("varFloat").nodeType('F').nodeValue(NodeInfo.NodeValue.builder().index(3).size(20).fsize(4).type(StringUtil.TYPE_FLOAT).visible(true).build()).build()
 										)
 								).build())
 				).build();
 
 		NodeInfo root = NodeInfo.builder()
-				.fieldName("Root")
-				.itfType('G')
+				.nodeName("Root")
+				.nodeType('G')
 				.nodeValue(NodeInfo.NodeValue.builder()
 						.index(0)
 						.size(1)

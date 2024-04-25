@@ -1,21 +1,24 @@
 package com.example.service1.transform;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
 public class NodeInfo {
 
-    private String fieldName;
+    private String nodeName;
     // 현재 노드가 그룹인지 필드인지 구분. (예를들면 G, F)
-    private char itfType;
+    private char nodeType;
     private NodeValue nodeValue;
     private List<NodeInfo> nodes;
 
     @Data
     @Builder
+    @NoArgsConstructor
     public static class NodeValue {
         // 상위 Info 에서 현재 필드의 인덱스
         private int index;
@@ -59,9 +62,9 @@ public class NodeInfo {
     }
 
     @Builder
-    public NodeInfo(String fieldName, char itfType, NodeValue nodeValue, List<NodeInfo> nodes) {
-        this.fieldName = fieldName;
-        this.itfType = itfType;
+    public NodeInfo(String nodeName, char nodeType, NodeValue nodeValue, List<NodeInfo> nodes) {
+        this.nodeName = nodeName;
+        this.nodeType = nodeType;
         this.nodeValue = nodeValue;
         this.nodes = nodes;
     }

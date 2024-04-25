@@ -61,10 +61,10 @@ public class Transform {
             sortedNodes.sort(Comparator.comparingInt(a -> a.getNodeValue().getIndex()));
 
             for (NodeInfo childNodeInfo : sortedNodes) {
-                Object childObj = currentMap.get(childNodeInfo.getFieldName());
+                Object childObj = currentMap.get(childNodeInfo.getNodeName());
 
                 // 필드 타입이 'F'인 경우 값을 직접 추출
-                if (childNodeInfo.getItfType() == NodeType.FIELD.getType() && childObj != null) {
+                if (childNodeInfo.getNodeType() == NodeType.FIELD.getType() && childObj != null) {
 
                     String fieldValue = childObj.toString();
 
@@ -80,7 +80,7 @@ public class Transform {
                     String paddStr = handleFieldLength(fieldValue, childNodeInfo);
 
                     resultBuilder.append(paddStr);
-                } else if (childNodeInfo.getItfType() == NodeType.GROUP.getType() && childObj != null) {
+                } else if (childNodeInfo.getNodeType() == NodeType.GROUP.getType() && childObj != null) {
                     // 필드 타입이 'G'인 경우 재귀적으로 처리
                     traverseNodeInfo(childObj, childNodeInfo, resultBuilder);
                 }
@@ -233,7 +233,7 @@ public class Transform {
 
         // 정렬된 노드 리스트를 반복 처리
         for (NodeInfo child : sortedNodes) {
-            String key = child.getFieldName();               // 현재 노드의 필드명
+            String key = child.getNodeName();               // 현재 노드의 필드명
             int fieldLength = child.getNodeValue().getSize(); // 현재 노드의 데이터 크기
             int count = 1;                                   // 기본적으로 한 번만 처리
 
@@ -248,12 +248,12 @@ public class Transform {
                 // 노드가 visible 아닌 경우 데이터 파싱만 수행하고 저장은 생략
                 if (!child.getNodeValue().isVisible()) {
                     // FIELD 타입은 길이만큼 증가, GROUP 타입은 재귀 호출
-                    localStart += (child.getItfType() == NodeType.FIELD.getType()) ? fieldLength : parseFixedLengthString(dataBytes, localStart, child, new HashMap<>());
+                    localStart += (child.getNodeType() == NodeType.FIELD.getType()) ? fieldLength : parseFixedLengthString(dataBytes, localStart, child, new HashMap<>());
                     continue; // 맵에 추가하지 않고 다음 반복으로 넘어감
                 }
 
                 // FIELD 타입의 데이터 처리
-                if (child.getItfType() == NodeType.FIELD.getType()) {
+                if (child.getNodeType() == NodeType.FIELD.getType()) {
                     // 데이터를 문자열로 변환 및 앞뒤 공백 제거
                     String fieldValue = new String(dataBytes, localStart, fieldLength, StandardCharsets.UTF_8).trim();
 
@@ -283,7 +283,7 @@ public class Transform {
                     } else {
                         map.put(key, fieldValue); // 단일 객체 처리
                     }
-                } else if (child.getItfType() == NodeType.GROUP.getType()) {
+                } else if (child.getNodeType() == NodeType.GROUP.getType()) {
                     // GROUP 타입의 데이터 처리 (하위 맵 객체 생성 및 재귀 호출로 파싱)
                     Map<String, Object> childMap = new HashMap<>();
                     int parsedLength = parseFixedLengthString(dataBytes, localStart, child, childMap);
