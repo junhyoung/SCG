@@ -63,10 +63,7 @@ public class AccountNumMaskingResolver extends Resolver {
 		try {
 			AccountNumMaskingResolver accountNumMaskingResolver = new AccountNumMaskingResolver();
 			// --------------- // S
-			String accountNum = "010-2760-8446";
-			System.out.println("accountNum : " + accountNum);
-			System.out.println("accountNum : " + accountNumMaskingResolver.resolve("010-2760-8446"));
-			System.out.println("accountNum : " + accountNumMaskingResolver.resolve("514-013941-04-011"));
+			System.out.println("accountNum : " + accountNumMaskingResolver.resolve("111-11111-22-222"));
 			// --------------- // E
 		} catch (Exception e) {
 			e.printStackTrace();
